@@ -1,0 +1,84 @@
+{% extends 'customadmin/base.html' %}
+
+{% block content %}
+<h1>Users</h1>
+
+<form method="get" action="" style="display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
+  <input type="text" name="search" value="{{ search }}" class="form-control" style="width:260px;" placeholder="Search email or username">
+  <select name="premium" class="form-control" style="width:180px;">
+    <option value="">All Users</option>
+    <option value="yes" {% if premium_filter == 'yes' %}selected{% endif %}>⭐ Premium Only</option>
+    <option value="no" {% if premium_filter == 'no' %}selected{% endif %}>Free Only</option>
+  </select>
+  <button type="submit" class="btn btn-secondary">Filter</button>
+  {% if search or premium_filter %}
+  <a href="{% url 'customadmin:user_list' %}" class="btn btn-danger">✕ Clear</a>
+  {% endif %}
+</form>
+
+{% if search or premium_filter %}
+<p style="color:#94a3b8; margin-bottom:12px;">
+  Found <strong style="color:#e2e8f0;">{{ total_results }}</strong> user(s)
+  {% if premium_filter == 'yes' %} — <span style="color:#FFD700;">⭐ Premium only</span>{% elif premium_filter == 'no' %} — Free only{% endif %}
+  {% if search %} matching "<strong style="color:#e2e8f0;">{{ search }}</strong>"{% endif %}
+</p>
+{% else %}
+<p style="color:#94a3b8; margin-bottom:12px;">Total users: <strong style="color:#e2e8f0;">{{ total_results }}</strong></p>
+{% endif %}
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Email</th>
+      <th>Username</th>
+      <th>Premium</th>
+      <th>Is Superuser</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in users %}
+    <tr>
+      <td>{{ user.id }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.username }}</td>
+      <td>
+        {% if user.is_premium %}
+          <span style="display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.85rem; font-weight:600; background:rgba(255,215,0,0.2); color:#FFD700; border:1px solid rgba(255,215,0,0.4);">⭐ Premium</span>
+        {% else %}
+          <span style="display:inline-block; padding:3px 10px; border-radius:12px; font-size:0.85rem; font-weight:600; background:rgba(148,163,184,0.15); color:#94a3b8; border:1px solid rgba(148,163,184,0.3);">Free</span>
+        {% endif %}
+      </td>
+      <td>{% if user.is_superuser %}Yes{% else %}No{% endif %}</td>
+      <td>
+        {% if not user.is_superuser %}
+        <form method="post" action="{% url 'customadmin:user_delete' user.id %}" style="display:inline">
+          {% csrf_token %}
+          <button class="btn btn-danger btn-sm" onclick="return confirm('Delete user and all their data?');">Delete</button>
+        </form>
+        {% else %}
+        —
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6" style="text-align:center; padding:2rem; color:#94a3b8;">No users found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<nav aria-label="Page navigation">
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ search }}&premium={{ premium_filter }}">Previous</a></li>
+    {% endif %}
+    <li class="page-item disabled"><a class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a></li>
+    {% if page_obj.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ search }}&premium={{ premium_filter }}">Next</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

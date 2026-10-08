@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Custom Admin{% endblock %} | AGames</title>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    
+    <link rel="stylesheet" href="{% static 'customadmin/css/style.css' %}?v=3.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="{% url 'customadmin:dashboard' %}">
+                    <img src="{% static 'images/agames.jpg' %}" alt="AGames" style="height: 40px; width: auto; vertical-align: middle; border-radius: 8px; margin-right: 10px;">
+                    <span class="brand-text">AGames Admin</span>
+                </a>
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+                    <span>☰</span>
+                </button>
+            </div>
+            <div class="nav-menu" id="navMenu">
+                <a href="{% url 'customadmin:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="{% url 'customadmin:game_list' %}" class="nav-link {% if 'game' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">🎯</span>
+                    Games
+                </a>
+                <a href="{% url 'customadmin:emulator_list' %}" class="nav-link {% if 'emulator' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">💻</span>
+                    Emulators
+                </a>
+                <a href="{% url 'customadmin:genre_list' %}" class="nav-link {% if 'genre' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">�</span>
+                    Genres
+                </a>
+                <a href="{% url 'customadmin:page_list' %}" class="nav-link {% if 'page' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">📄</span>
+                    Pages
+                </a>
+                <a href="{% url 'customadmin:notification_send' %}" class="nav-link {% if 'notification' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">📱</span>
+                    Notifications
+                </a>
+                <a href="{% url 'customadmin:import_games' %}" class="nav-link {% if 'import' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">📥</span>
+                    Import
+                </a>
+                <a href="{% url 'customadmin:export_games' %}" class="nav-link {% if 'export' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">📤</span>
+                    Export
+                </a>
+                <a href="{% url 'customadmin:user_list' %}" class="nav-link {% if 'user' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">👥</span>
+                    Users
+                </a>
+                <a href="{% url 'customadmin:review_list' %}" class="nav-link {% if 'review' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">📝</span>
+                    Reviews
+                </a>
+                <a href="{% url 'customadmin:support_messages' %}" class="nav-link {% if 'support' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">💬</span>
+                    Support
+                </a>
+                <a href="{% url 'customadmin:app_settings' %}" class="nav-link {% if 'app_settings' in request.resolver_match.url_name %}active{% endif %}">
+                    <span class="nav-icon">⚙️</span>
+                    App Settings
+                </a>
+            </div>
+            <div class="nav-actions">
+                <div class="user-menu">
+                    <span class="user-name">{{ request.user.email }}</span>
+                    <a href="{% url 'customadmin:logout' %}" class="btn-logout">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 AGames. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="{% static 'customadmin/js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

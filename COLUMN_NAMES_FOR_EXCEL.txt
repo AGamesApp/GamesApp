@@ -1,0 +1,74 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                     📋 EXCEL COLUMN NAMES - COPY THIS                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+✅ MINIMAL VERSION (Required Only):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+game_nameconsole
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+⭐ FULL VERSION (All Columns):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+game_nameconsoleprioritydescriptionimage_urlimage_1image_2image_3image_4image_5sizedownload_urlgame_urlvideo_urlregiongenresis_premiumyear
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+📝 COLUMN DETAILS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ REQUIRED (2):
+  1. game_name      → Game title (REQUIRED)
+  2. console        → Emulator/Console name (REQUIRED)
+
+⭐ OPTIONAL (16) - Safe defaults if empty:
+  3. priority       → Number (higher = appears first), default: 0
+  4. description    → Game description text, default: empty
+  5. image_url      → Main cover image URL, default: empty
+  6. image_1        → Screenshot URL #1, default: empty
+  7. image_2        → Screenshot URL #2, default: empty
+  8. image_3        → Screenshot URL #3, default: empty
+  9. image_4        → Screenshot URL #4, default: empty
+ 10. image_5        → Screenshot URL #5, default: empty
+ 11. size           → File size (e.g., "500 MB"), default: empty
+ 12. download_url   → Download link, default: empty
+ 13. game_url       → Game page URL, default: empty
+ 14. video_url      → Video preview URL, default: empty
+ 15. region         → Region (USA, Europe, etc.), default: empty
+ 16. genres         → Comma-separated (e.g., "Action, RPG"), default: empty
+ 17. is_premium     → true/false, 1/0, yes/no, default: false
+ 18. year           → Release year, default: empty
+
+
+💡 EXAMPLE DATA ROW:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Super Mario Bros | NES | 100 | Classic platformer | https://img.com/mario.jpg | https://img.com/shot1.jpg | https://img.com/shot2.jpg |  |  |  | 40 KB | https://download.com/mario | https://game.com/mario | https://youtube.com/mario | USA | Action, Platform | true | 1985
+
+
+🎯 QUICK TIPS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Copy the header row above into Excel row 1
+✓ Add your game data starting from row 2
+✓ Empty cells are OK - they use safe defaults
+✓ Column names are case-insensitive
+✓ All images must be URLs (http:// or https://)
+✓ Priority: higher number = appears first in lists
+✓ Genres: use commas to separate (e.g., "Action, RPG, Platform")
+✓ is_premium: accepts true/false, 1/0, yes/no
+
+
+🚀 USAGE:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Create Excel with columns
+2. Add game data
+3. Upload to Google Sheets
+4. Share → "Anyone with link can view"
+5. Copy share link
+6. Run: python import_games.py
+7. Select option 1
+8. Paste link
+
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║ See IMPORT_GAMES_GUIDE.md for detailed documentation                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝

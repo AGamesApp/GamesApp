@@ -1,0 +1,130 @@
+{% extends 'customadmin/base.html' %}
+
+{% block title %}{{ action }} Page{% endblock %}
+
+{% block extra_css %}
+{{ form.media.css }}
+<style>
+    /* CKEditor Container Styling */
+    .django-ckeditor-widget {
+        margin-top: 10px;
+        width: 100% !important;
+    }
+    
+    /* CKEditor iframe styling */
+    .cke {
+        border: 1px solid #ddd !important;
+        border-radius: 4px !important;
+        width: 100% !important;
+    }
+    
+    /* Editor content area */
+    .cke_contents {
+        background: #ffffff !important;
+        width: 100% !important;
+    }
+    
+    /* Make editor text black by default */
+    .cke_wysiwyg_frame {
+        background: #ffffff !important;
+        width: 100% !important;
+    }
+    
+    /* Fix dropdown panels to NOT take full width */
+    .cke_combopanel {
+        width: auto !important;
+        max-width: 250px !important;
+    }
+    
+    /* Fix color panel */
+    .cke_panel_block {
+        width: auto !important;
+    }
+    
+    /* Fix color picker panels specifically */
+    .cke_panel[data-panel-definition*="textcolor"],
+    .cke_panel[data-panel-definition*="bgcolor"],
+    .cke_colorblock {
+        width: auto !important;
+        min-width: 200px !important;
+        max-width: 300px !important;
+    }
+    
+    /* Ensure form group takes full width but not internal elements */
+    .form-group {
+        width: 100% !important;
+    }
+    
+    /* Fix combo buttons width */
+    .cke_combo {
+        width: auto !important;
+    }
+    
+    /* Fix all CKEditor panels */
+    .cke_panel {
+        width: auto !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">{{ action }} Page</h1>
+    <div class="page-actions">
+        <a href="{% url 'customadmin:page_list' %}" class="btn btn-secondary">← Back to List</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="post" class="form" id="page-form">
+            {% csrf_token %}
+            
+            <!-- Title Field -->
+            <div class="form-group">
+                <label for="{{ form.title.id_for_label }}" class="form-label">
+                    Page Title <span class="required">*</span>
+                </label>
+                {{ form.title }}
+                {% if form.title.help_text %}
+                    <small class="form-text">{{ form.title.help_text }}</small>
+                {% endif %}
+                {% if form.title.errors %}
+                    <div class="form-errors">
+                        {% for error in form.title.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Content Field with CKEditor -->
+            <div class="form-group">
+                <label for="{{ form.content.id_for_label }}" class="form-label">
+                    Page Content <span class="required">*</span>
+                </label>
+                
+                {{ form.content }}
+                
+                {% if form.content.errors %}
+                    <div class="form-errors">
+                        {% for error in form.content.errors %}
+                            <span class="error">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 Save Page</button>
+                <a href="{% url 'customadmin:page_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ form.media.js }}
+{% endblock %}

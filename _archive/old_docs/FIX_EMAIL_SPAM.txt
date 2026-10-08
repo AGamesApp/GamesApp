@@ -1,0 +1,212 @@
+================================================================================
+WHY EMAILS GO TO SPAM - DIAGNOSIS & FIX
+================================================================================
+
+Problem Identified: ❌ Reverse DNS (PTR) Record Mismatch
+
+Current Status:
+✅ SPF Record:   v=spf1 a mx ip4:152.53.206.21 ~all  [CORRECT]
+✅ DMARC Record: v=DMARC1; p=none; rua=mailto:admin@games.agames.cv  [CORRECT]
+❌ rDNS (PTR):   v2202512320709413627.quicksrv.de  [WRONG - Should be games.agames.cv]
+
+================================================================================
+THE PROBLEM
+================================================================================
+
+When Gmail receives your email, it does these checks:
+
+1. ✅ SPF Check: "Is 152.53.206.21 allowed to send for games.agames.cv?" → YES (PASS)
+2. ✅ DMARC Check: "Does this follow DMARC policy?" → YES (PASS)
+3. ❌ rDNS Check: "Does 152.53.206.21 point back to games.agames.cv?" → NO (FAIL)
+   
+   Current: 152.53.206.21 → v2202512320709413627.quicksrv.de ❌
+   Expected: 152.53.206.21 → games.agames.cv ✅
+
+Gmail marks it as spam because the hostname doesn't match!
+
+================================================================================
+HOW TO FIX - CHANGE rDNS IN NETCUP
+================================================================================
+
+OPTION 1: Via Netcup Customer Control Panel (CCP) - Fastest
+------------------------------------------------------------
+
+1. Go to: https://www.customercontrolpanel.de
+2. Log in with your Netcup credentials
+3. Click on "Products" → "vServer" or "Root Server"
+4. Select your server (152.53.206.21)
+5. Click on "Network" or "IP Addresses"
+6. Find your IPv4 address: 152.53.206.21
+7. Click "Edit" or "Change rDNS" (pencil icon)
+8. In the "Reverse DNS" field, enter: games.agames.cv
+9. Click "Save" or "Apply"
+10. Wait 5-15 minutes for propagation
+
+Note: The exact menu names may vary - look for:
+- "IP Management" or "IP-Adressen"
+- "Reverse DNS" or "PTR Record" or "rDNS"
+
+
+OPTION 2: Via Netcup Support Ticket
+------------------------------------
+
+If you can't find the rDNS option in CCP:
+
+1. Go to: https://www.customercontrolpanel.de
+2. Click "Support" → "New Ticket" or "Neues Ticket"
+3. Use this template:
+
+   Subject: Change Reverse DNS (PTR) for 152.53.206.21
+   
+   Message:
+   Hello Netcup Support,
+   
+   I would like to change the reverse DNS (PTR) record for my server.
+   
+   Server Details:
+   - IP Address: 152.53.206.21
+   - Current rDNS: v2202512320709413627.quicksrv.de
+   - Requested rDNS: games.agames.cv
+   
+   I need this change to improve email deliverability for my mail server.
+   The forward DNS (A record) for games.agames.cv is already pointing to 152.53.206.21.
+   
+   Please update the PTR record to: games.agames.cv
+   
+   Thank you!
+
+4. Submit ticket
+5. Wait for Netcup to update (usually within 24 hours)
+
+
+OPTION 3: Via Netcup API (Advanced)
+------------------------------------
+
+If you're comfortable with API:
+
+Netcup provides DNS API to manage PTR records.
+Documentation: https://www.netcup-wiki.de/wiki/CCP_API
+
+You'll need:
+- Customer number
+- API key
+- API password
+
+
+================================================================================
+VERIFICATION AFTER FIX
+================================================================================
+
+After Hetzner updates the rDNS, verify with:
+
+1. Check rDNS:
+   dig -x 152.53.206.21 +short
+   
+   Expected result: games.agames.cv.
+
+2. Check forward/reverse match:
+   host 152.53.206.21
+   
+   Should show: 152.53.206.21 domain name pointer games.agames.cv.
+
+3. Send test email:
+   curl -X POST https://games.agames.cv/api/users/password-reset/request/ \
+     -H "Content-Type: application/json" \
+     -d '{"email": "ramy41599@gmail.com"}' -k
+
+4. Check inbox (should arrive in inbox, not spam!)
+
+5. View email headers in Gmail:
+   - Open email → Three dots → "Show original"
+   - Look for: "Received-SPF: pass"
+   - Look for: "DMARC: 'PASS'"
+   - No warnings about hostname mismatch
+
+
+================================================================================
+WHY THIS MATTERS
+================================================================================
+
+Email Reputation Score:
+
+WITHOUT correct rDNS:
+- SPF: PASS (+1 point)
+- DMARC: PASS (+1 point)
+- rDNS: FAIL (-5 points)
+- Hostname mismatch: (-3 points)
+= TOTAL: -6 points → SPAM FOLDER 📪
+
+WITH correct rDNS:
+- SPF: PASS (+1 point)
+- DMARC: PASS (+1 point)
+- rDNS: PASS (+2 points)
+- FCrDNS match: (+2 points)
+= TOTAL: +6 points → INBOX ✅
+
+
+================================================================================
+ADDITIONAL IMPROVEMENTS (Optional)
+================================================================================
+
+After fixing rDNS, you can further improve deliverability:
+
+1. DKIM Signing (Advanced)
+   -------------------------
+   Install and configure OpenDKIM for cryptographic signing
+   
+   sudo apt install opendkim opendkim-tools
+   
+   This adds another layer of authentication.
+
+2. Test Email Deliverability
+   --------------------------
+   Visit: https://www.mail-tester.com
+   
+   Send email to the provided address, get a score out of 10.
+   With correct rDNS, you should get 8-10/10.
+
+3. Monitor Email Reputation
+   -------------------------
+   Check your IP reputation at:
+   - https://www.senderscore.org
+   - https://mxtoolbox.com/blacklists.aspx
+   
+   Make sure 152.53.206.21 is not blacklisted.
+
+
+================================================================================
+TIMELINE
+================================================================================
+
+Via Cloud Console (Self-service):
+  - Update time: Immediate
+  - Propagation: 5-15 minutes
+  - Total: ~15 minutes ⚡
+
+Via Support Ticket:
+  - Response time: 2-24 hours
+  - Update time: Immediate after approval
+  - Propagation: 5-15 minutes
+  - Total: 2-24 hours 📧
+
+
+================================================================================
+CURRENT COMMANDS OUTPUT
+================================================================================
+
+$ dig TXT games.agames.cv +short
+"v=spf1 a mx ip4:152.53.206.21 ~all"
+✅ SPF is correct
+
+$ dig TXT _dmarc.games.agames.cv +short
+"v=DMARC1; p=none; rua=mailto:admin@games.agames.cv"
+✅ DMARC is correct
+
+$ dig -x 152.53.206.21 +short
+v2202512320709413627.quicksrv.de.
+❌ rDNS is WRONG - needs to be: games.agames.cv.
+
+
+================================================================================
+PRIORITY: HIGH - Fix this to get emails into inbox!
+================================================================================

@@ -1,0 +1,8 @@
+# AGames Automated Backup Cron Jobs
+# Database backups run daily at 2:00 AM server time
+
+# Daily database backup at 2:00 AM
+0 2 * * * /root/game/scripts/backup_database.sh >> /root/backups/postgresql/cron.log 2>&1
+
+# Weekly backup on Sunday at 3:00 AM (kept separately)
+0 3 * * 0 /root/game/scripts/backup_database.sh && cp /root/backups/postgresql/agames_backup_*.sql.gz /root/backups/postgresql/weekly_backup_$(date +\%Y\%m\%d).sql.gz >> /root/backups/postgresql/cron.log 2>&1

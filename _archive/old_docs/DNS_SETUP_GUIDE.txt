@@ -1,0 +1,79 @@
+
+╔═══════════════════════════════════════════════════════════════════╗
+║          DNS CONFIGURATION FOR games.agames.cv (Spaceship)              ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+Your Server IP: 152.53.206.21
+Your Domain: games.agames.cv
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DNS RECORDS TO ADD ON SPACESHIP:
+
+┌─────────────────────────────────────────────────────────────────┐
+│ Record 1 (Main domain)                                          │
+├─────────────────────────────────────────────────────────────────┤
+│ Type:     A                                                     │
+│ Name:     @                                                     │
+│ Value:    152.53.206.21                                         │
+│ TTL:      3600 (or Auto/Default)                                │
+└─────────────────────────────────────────────────────────────────┘
+
+This makes games.agames.cv point to your server
+
+┌─────────────────────────────────────────────────────────────────┐
+│ Record 2 (WWW subdomain)                                        │
+├─────────────────────────────────────────────────────────────────┤
+│ Type:     A                                                     │
+│ Name:     www                                                   │
+│ Value:    152.53.206.21                                         │
+│ TTL:      3600 (or Auto/Default)                                │
+└─────────────────────────────────────────────────────────────────┘
+
+This makes games.agames.cv point to your server
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP-BY-STEP ON SPACESHIP:
+
+1. Go to: https://www.spaceship.com/login
+2. Log in with your credentials
+3. Click on "Domains" in the menu
+4. Find and click on "games.agames.cv"
+5. Look for "DNS" or "DNS Records" tab
+6. Click "Add Record" or similar button
+7. Add the first A record (@ → 152.53.206.21)
+8. Click "Add Record" again
+9. Add the second A record (www → 152.53.206.21)
+10. Save/Apply changes
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+VERIFICATION:
+
+After adding records, wait 5-30 minutes, then test:
+
+Test main domain:
+  ping games.agames.cv
+  (Should show: 152.53.206.21)
+
+Test www subdomain:
+  ping games.agames.cv
+  (Should show: 152.53.206.21)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+WHAT HAPPENS NEXT:
+
+Once DNS is propagated:
+1. I'll obtain a FREE Let's Encrypt SSL certificate
+2. Configure Nginx for your domain
+3. Update Django settings
+4. Your site will be live at: https://games.agames.cv
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Questions? Just ask!
+
+Once DNS is set up, tell me "done" and I'll proceed with SSL setup.
+

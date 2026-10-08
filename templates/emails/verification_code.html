@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Code - AGames</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .tagline {
+            color: #e0e0e0;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .content {
+            padding: 40px 30px;
+        }
+        .greeting {
+            font-size: 24px;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+        .message {
+            font-size: 16px;
+            color: #666666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .code-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        .code {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ffffff;
+            letter-spacing: 10px;
+            margin: 0;
+            font-family: 'Courier New', monospace;
+        }
+        .code-label {
+            color: #e0e0e0;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #856404;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+        }
+        .footer-text {
+            color: #999999;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .social-links {
+            margin: 20px 0;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #667eea;
+            text-decoration: none;
+        }
+        @media only screen and (max-width: 600px) {
+            .content {
+                padding: 30px 20px;
+            }
+            .code {
+                font-size: 36px;
+                letter-spacing: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1 class="logo">🎮 AGames</h1>
+            <p class="tagline">Your Ultimate Gaming Platform</p>
+        </div>
+        
+        <div class="content">
+            <h2 class="greeting">Hello, Gamer!</h2>
+            
+            <p class="message">
+                Welcome to AGames! We're excited to have you join our gaming community. 
+                To complete your registration, please use the verification code below:
+            </p>
+            
+            <div class="code-container">
+                <p class="code">{{ code }}</p>
+                <p class="code-label">Your Verification Code</p>
+            </div>
+            
+            <p class="message">
+                This code will expire in <strong>10 minutes</strong>. 
+                Enter it in the app to verify your email address and start exploring thousands of games.
+            </p>
+            
+            <div class="warning">
+                ⚠️ <strong>Security Notice:</strong> If you didn't request this code, please ignore this email. 
+                Never share your verification code with anyone.
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p class="footer-text"><strong>AGames</strong> - All Emulators, All Games</p>
+            <p class="footer-text">GBA • NES • PS2 • PSP • PSX • Wii</p>
+            <div class="social-links">
+                <a href="#">Privacy Policy</a> • 
+                <a href="#">Terms of Service</a> • 
+                <a href="#">Contact Us</a>
+            </div>
+            <p class="footer-text" style="margin-top: 20px;">
+                © 2026 AGames. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,584 @@
+{% extends 'customadmin/base.html' %}
+{% load custom_filters %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Dashboard</h1>
+    <div class="page-actions">
+        <span class="badge" style="background: rgba(99, 102, 241, 0.2); padding: 0.5rem 1rem; border-radius: 20px; color: var(--primary-light);">
+            👑 Superuser
+        </span>
+    </div>
+</div>
+
+<!-- Main Stats Grid -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon">🎮</div>
+        <div class="stat-label">Total Games</div>
+        <div class="stat-value">{{ games_count }}</div>
+        <a href="{% url 'customadmin:game_list' %}" class="stat-link">
+            Manage Games →
+        </a>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">💻</div>
+        <div class="stat-label">Emulators</div>
+        <div class="stat-value">{{ emulators_count }}</div>
+        <a href="{% url 'customadmin:emulator_list' %}" class="stat-link">
+            Manage Emulators →
+        </a>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">🏷️</div>
+        <div class="stat-label">Genres</div>
+        <div class="stat-value">{{ genres_count }}</div>
+        <a href="{% url 'customadmin:genre_list' %}" class="stat-link">
+            Manage Genres →
+        </a>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon">📄</div>
+        <div class="stat-label">Pages</div>
+        <div class="stat-value">{{ pages_count }}</div>
+        <a href="{% url 'customadmin:page_list' %}" class="stat-link">
+            Manage Pages →
+        </a>
+    </div>
+    
+    <div class="stat-card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%); border: 2px solid rgba(99, 102, 241, 0.3);">
+        <div class="stat-icon">📱</div>
+        <div class="stat-label">Push Notifications</div>
+        <div class="stat-value">{{ active_devices }}</div>
+        <a href="{% url 'customadmin:notification_send' %}" class="stat-link" style="color: var(--primary-light); font-weight: 600;">
+            Send Notification →
+        </a>
+    </div>
+    
+    <div class="stat-card" style="background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%); border: 2px solid rgba(236, 72, 153, 0.3);">
+        <div class="stat-icon">💬</div>
+        <div class="stat-label">Support Messages</div>
+        <div class="stat-value">{{ pending_support_messages }}</div>
+        <a href="{% url 'customadmin:support_messages' %}" class="stat-link" style="color: #ec4899; font-weight: 600;">
+            View Messages →
+        </a>
+    </div>
+</div>
+
+<!-- Game Statistics -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">📊 Game Statistics</h2>
+    </div>
+    <div class="card-body">
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="stat-card" style="border: 1px solid rgba(255, 215, 0, 0.3);">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-label">Premium Games</div>
+                <div class="stat-value" style="color: #FFD700;">{{ premium_games_count }}</div>
+                <div class="stat-link" style="color: var(--text-muted); font-size: 0.85rem;">
+                    {{ free_games_count }} Free Games
+                </div>
+            </div>
+            
+            <div class="stat-card" style="border: 1px solid rgba(34, 197, 94, 0.3);">
+                <div class="stat-icon">📥</div>
+                <div class="stat-label">Total Downloads</div>
+                <div class="stat-value" style="color: #22c55e;">{{ total_downloads }}</div>
+            </div>
+            
+            <div class="stat-card" style="border: 1px solid rgba(239, 68, 68, 0.3);">
+                <div class="stat-icon">❤️</div>
+                <div class="stat-label">Total Loves</div>
+                <div class="stat-value" style="color: #ef4444;">{{ total_loves }}</div>
+            </div>
+            
+            <div class="stat-card" style="border: 1px solid rgba(99, 102, 241, 0.3);">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-label">Total Ratings</div>
+                <div class="stat-value" style="color: #6366f1;">{{ total_ratings }}</div>
+                <div class="stat-link" style="color: var(--text-muted); font-size: 0.85rem;">
+                    Avg: {{ average_rating }}/5.0
+                </div>
+            </div>
+            
+            <div class="stat-card" style="border: 1px solid rgba(34, 197, 94, 0.3);">
+                <div class="stat-icon">💬</div>
+                <div class="stat-label">Total Reviews</div>
+                <div class="stat-value" style="color: #22c55e;">{{ total_reviews }}</div>
+                <div class="stat-link" style="color: var(--text-muted); font-size: 0.85rem;">
+                    User Feedback
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Statistics -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">👥 User Statistics</h2>
+    </div>
+    <div class="card-body">
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="stat-card">
+                <div class="stat-icon">👤</div>
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value">{{ total_users }}</div>
+            </div>
+            
+            <div class="stat-card" style="border: 1px solid rgba(255, 215, 0, 0.3);">
+                <div class="stat-icon">💎</div>
+                <div class="stat-label">Premium Users</div>
+                <div class="stat-value" style="color: #FFD700;">{{ premium_users }}</div>
+            </div>
+            
+            <div class="stat-card" style="border: 1px solid rgba(34, 197, 94, 0.3);">
+                <div class="stat-icon">✅</div>
+                <div class="stat-label">Verified Users</div>
+                <div class="stat-value" style="color: #22c55e;">{{ verified_users }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- View Statistics - NEW SECTION -->
+<div class="card" style="margin-top: 2rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);">
+    <div class="card-header" style="border-bottom: 2px solid rgba(99, 102, 241, 0.3);">
+        <h2 class="card-title">👁️ View Statistics</h2>
+    </div>
+    <div class="card-body">
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+            <div class="stat-card" style="border: 1px solid rgba(99, 102, 241, 0.5); background: rgba(99, 102, 241, 0.1);">
+                <div class="stat-icon">👁️</div>
+                <div class="stat-label">Total Views</div>
+                <div class="stat-value" style="color: #6366f1;">{{ total_views|default:0 }}</div>
+                <div class="stat-link" style="color: var(--text-muted); font-size: 0.85rem;">
+                    Across all games
+                </div>
+            </div>
+            
+            <div class="stat-card" style="border: 1px solid rgba(139, 92, 246, 0.5); background: rgba(139, 92, 246, 0.1);">
+                <div class="stat-icon">📊</div>
+                <div class="stat-label">Avg Views/Game</div>
+                <div class="stat-value" style="color: #8b5cf6;">{{ avg_views_per_game|default:0 }}</div>
+                <div class="stat-link" style="color: var(--text-muted); font-size: 0.85rem;">
+                    Per game average
+                </div>
+            </div>
+            
+            <div class="stat-card" style="border: 1px solid rgba(236, 72, 153, 0.5); background: rgba(236, 72, 153, 0.1);">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-label">Highest Views</div>
+                <div class="stat-value" style="color: #ec4899;">{{ max_views|default:0 }}</div>
+                <div class="stat-link" style="color: var(--text-muted); font-size: 0.85rem;">
+                    Most popular game
+                </div>
+            </div>
+            
+            <div class="stat-card" style="border: 1px solid rgba(34, 197, 94, 0.5); background: rgba(34, 197, 94, 0.1);">
+                <div class="stat-icon">🆕</div>
+                <div class="stat-label">New This Week</div>
+                <div class="stat-value" style="color: #22c55e;">{{ recent_games_count|default:0 }}</div>
+                <div class="stat-link" style="color: var(--text-muted); font-size: 0.85rem;">
+                    Last 7 days
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Two Column Layout for Charts -->
+<div class="dashboard-grid-2col">
+    
+    <!-- Games by Genre -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">� Popular Genres</h2>
+        </div>
+        <div class="card-body">
+            {% if games_by_genre %}
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    {% for genre in games_by_genre %}
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; margin-bottom: 0.25rem;">{{ genre.name }}</div>
+                                <div style="background: rgba(99, 102, 241, 0.2); height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div style="background: linear-gradient(90deg, var(--primary-light), var(--primary)); height: 100%; width: {% widthratio genre.game_count games_count 100 %}%; transition: width 0.3s;"></div>
+                                </div>
+                            </div>
+            <div style="margin-left: 1rem; font-weight: 700; color: var(--primary-light);">{{ genre.game_count }} games</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No genres yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Top Emulators -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">💻 Top Emulators</h2>
+        </div>
+        <div class="card-body">
+            {% if top_emulators %}
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    {% for emulator in top_emulators %}
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; margin-bottom: 0.25rem;">
+                                    {{ emulator.name }}
+                                    <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: normal;">
+                                        ({{ emulator.total_views|default:0 }} views)
+                                    </span>
+                                </div>
+                                <div style="background: rgba(34, 197, 94, 0.2); height: 8px; border-radius: 4px; overflow: hidden;">
+                                    <div style="background: linear-gradient(90deg, #22c55e, #16a34a); height: 100%; width: {% widthratio emulator.game_count games_count 100 %}%; transition: width 0.3s;"></div>
+                                </div>
+                            </div>
+                            <div style="margin-left: 1rem; font-weight: 700; color: #22c55e;">{{ emulator.game_count }} games</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No emulators yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Views by Emulator - NEW SECTION -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">📊 Views by Emulator Platform</h2>
+    </div>
+    <div class="card-body">
+        {% if views_by_emulator %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                {% for emulator in views_by_emulator %}
+                    <div style="padding: 1.5rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%); border-radius: 12px; border: 1px solid rgba(99, 102, 241, 0.3);">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                            <h3 style="margin: 0; font-size: 1.1rem; color: var(--text-primary);">{{ emulator.name }}</h3>
+                            <div style="background: rgba(99, 102, 241, 0.2); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; color: var(--primary-light);">
+                                {{ emulator.game_count }} games
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: baseline; gap: 0.5rem;">
+                            <div style="font-size: 2rem; font-weight: 700; color: #6366f1;">{{ emulator.total_views|default:0 }}</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">total views</div>
+                        </div>
+                        {% if emulator.game_count > 0 %}
+                            <div style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.85rem;">
+                                ≈ {{ emulator.total_views|default:0|divide:emulator.game_count }} views per game
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-center text-muted">No view data available yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Three Column Layout for Top Games -->
+<div class="dashboard-grid-3col">
+    
+    <!-- Most Viewed Games - NEW -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);">
+        <div class="card-header" style="border-bottom: 2px solid rgba(99, 102, 241, 0.2);">
+            <h2 class="card-title">👁️ Most Viewed Games</h2>
+        </div>
+        <div class="card-body">
+            {% if most_viewed_games %}
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    {% for game in most_viewed_games %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: rgba(99, 102, 241, 0.1); border-radius: 8px; border: 1px solid rgba(99, 102, 241, 0.2);">
+                            <div style="flex: 1; overflow: hidden;">
+                                <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ game.title }}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">{{ game.emulator.name }}</div>
+                            </div>
+                            <div style="margin-left: 1rem; font-weight: 700; color: #6366f1;">👁️ {{ game.views }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No views yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Most Loved Games -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">❤️ Most Loved Games</h2>
+        </div>
+        <div class="card-body">
+            {% if most_loved_games %}
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    {% for game in most_loved_games %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: rgba(239, 68, 68, 0.05); border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.1);">
+                            <div style="flex: 1; overflow: hidden;">
+                                <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ game.title }}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">{{ game.emulator.name }}</div>
+                            </div>
+                            <div style="margin-left: 1rem; font-weight: 700; color: #ef4444;">❤️ {{ game.love_count }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No games loved yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Most Downloaded Games -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">📥 Most Downloaded Games</h2>
+        </div>
+        <div class="card-body">
+            {% if most_downloaded_games %}
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    {% for game in most_downloaded_games %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: rgba(34, 197, 94, 0.05); border-radius: 8px; border: 1px solid rgba(34, 197, 94, 0.1);">
+                            <div style="flex: 1; overflow: hidden;">
+                                <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ game.title }}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">{{ game.emulator.name }}</div>
+                            </div>
+                            <div style="margin-left: 1rem; font-weight: 700; color: #22c55e;">📥 {{ game.download_count }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No downloads yet.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Top Rated Games -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">⭐ Top Rated Games</h2>
+        </div>
+        <div class="card-body">
+            {% if top_rated_games %}
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    {% for game in top_rated_games %}
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: rgba(255, 215, 0, 0.05); border-radius: 8px; border: 1px solid rgba(255, 215, 0, 0.2);">
+                            <div style="flex: 1; overflow: hidden;">
+                                <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ game.title }}</div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted);">{{ game.rating_count }} rating{{ game.rating_count|pluralize }}</div>
+                            </div>
+                            <div style="margin-left: 1rem; font-weight: 700; color: #FFD700;">⭐ {{ game.avg_rating|floatformat:1 }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No ratings yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="dashboard-grid-2col">
+    
+    <!-- Recent Games -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">📋 Recent Games</h2>
+            <a href="{% url 'customadmin:game_create' %}" class="btn btn-primary btn-sm">+ Add Game</a>
+        </div>
+        <div class="card-body">
+            {% if recent_games %}
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Emulator</th>
+                                <th>Premium</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for game in recent_games %}
+                            <tr>
+                                <td>
+                                    <strong>{{ game.title|truncatewords:5 }}</strong>
+                                </td>
+                                <td>{{ game.emulator.name }}</td>
+                                <td>
+                                    {% if game.is_premium %}
+                                        <span style="color: #FFD700;">⭐</span>
+                                    {% else %}
+                                        <span style="color: var(--text-muted);">Free</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'customadmin:game_edit' game.pk %}" class="btn btn-secondary btn-sm">✏️</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No games yet. <a href="{% url 'customadmin:game_create' %}" style="color: var(--primary-light);">Create your first game</a></p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Most Downloaded Games -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">📥 Most Downloaded Games</h2>
+        </div>
+        <div class="card-body">
+            {% if recent_downloads %}
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    {% for game in recent_downloads %}
+                        <div style="padding: 0.75rem; background: rgba(99, 102, 241, 0.05); border-radius: 8px; border: 1px solid rgba(99, 102, 241, 0.1);">
+                            <div style="display: flex; justify-content: space-between; align-items: start;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; font-size: 0.9rem;">{{ game.title|truncatewords:6 }}</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+                                        {{ game.emulator.name }}
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 0.85rem; font-weight: 600; color: var(--primary-light);">{{ game.downloads|default:0 }} downloads</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">{{ game.views|default:0 }} views</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-center text-muted">No downloads yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Recent Ratings -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">⭐ Recent Ratings</h2>
+    </div>
+    <div class="card-body">
+        {% if recent_ratings %}
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Game</th>
+                            <th>User</th>
+                            <th>Score</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rating in recent_ratings %}
+                        <tr>
+                            <td><strong>{{ rating.game.title|truncatewords:5 }}</strong></td>
+                            <td>{{ rating.user.email|truncatewords:1 }}</td>
+                            <td>
+                                <span style="color: #FFD700; font-weight: 700;">
+                                    {{ rating.score }}/5.0
+                                </span>
+                            </td>
+                            <td>{{ rating.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-center text-muted">No ratings yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Recent Reviews -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">💬 Recent Reviews</h2>
+    </div>
+    <div class="card-body">
+        {% if recent_reviews %}
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Game</th>
+                            <th>User</th>
+                            <th>Review</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for review in recent_reviews %}
+                        <tr>
+                            <td><strong>{{ review.game.title|truncatewords:5 }}</strong></td>
+                            <td>{{ review.user.email|truncatewords:1 }}</td>
+                            <td>{{ review.review|truncatewords:15 }}</td>
+                            <td>{{ review.created_at|date:"M d, Y" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-center text-muted">No reviews yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Top Reviewers -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">🏆 Top Reviewers</h2>
+    </div>
+    <div class="card-body">
+        {% if top_reviewers %}
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Total Reviews</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in top_reviewers %}
+                        <tr>
+                            <td><strong>#{{ forloop.counter }}</strong></td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <span class="badge" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; padding: 0.25rem 0.75rem; border-radius: 12px;">
+                                    {{ user.review_count }} reviews
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-center text-muted">No reviewers yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+

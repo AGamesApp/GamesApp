@@ -1,0 +1,177 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  GOOGLE OAUTH & FIREBASE: ADD AGAMES.CV (COPY-PASTE READY)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚡ QUICK CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[ ] Google Cloud Console: Add authorized origins & redirect URIs
+[ ] Firebase Console: Add authorized domain
+[ ] Test OAuth login flow from browser
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PART 1: GOOGLE CLOUD CONSOLE (OAuth Client)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔗 URL: https://console.cloud.google.com/apis/credentials
+
+STEPS:
+──────────────────────────────────────────────────────────────────────────────
+
+1. Select your project (the one with client ID: 602341504698-...)
+
+2. Click "Credentials" in left sidebar
+
+3. Find your OAuth 2.0 Client ID (type: Web application)
+   - Client ID: your-client-id.apps.googleusercontent.com
+
+4. Click the name to edit
+
+5. Under "Authorized JavaScript origins", ADD:
+   ┌────────────────────────────────────────────────────────────────────────┐
+   │ https://games.agames.cv                                                      │
+   └────────────────────────────────────────────────────────────────────────┘
+
+6. Under "Authorized redirect URIs", ADD:
+   ┌────────────────────────────────────────────────────────────────────────┐
+   │ https://games.agames.cv/accounts/google/login/callback/                     │
+   └────────────────────────────────────────────────────────────────────────┘
+
+7. Click "SAVE"
+
+
+COPY-PASTE VALUES (for JavaScript origins):
+──────────────────────────────────────────────────────────────────────────────
+https://games.agames.cv
+
+
+COPY-PASTE VALUES (for redirect URIs):
+──────────────────────────────────────────────────────────────────────────────
+https://games.agames.cv/accounts/google/login/callback/
+
+
+⚠️  IMPORTANT: The redirect URI MUST match EXACTLY (including the trailing slash)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PART 2: FIREBASE CONSOLE (Authorized Domains)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔗 URL: https://console.firebase.google.com
+
+STEPS:
+──────────────────────────────────────────────────────────────────────────────
+
+1. Select your project
+
+2. Go to: Authentication → Sign-in method
+
+3. Scroll to bottom: "Authorized domains" section
+
+4. Click "Add domain"
+
+5. Enter:
+   ┌────────────────────────────────────────────────────────────────────────┐
+   │ games.agames.cv                                                              │
+   └────────────────────────────────────────────────────────────────────────┘
+
+6. Click "Add"
+
+
+COPY-PASTE VALUE:
+──────────────────────────────────────────────────────────────────────────────
+games.agames.cv
+
+
+⚠️  NOTE: Do NOT include "https://" or "www" in Firebase authorized domains
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PART 3: TESTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+After updating both consoles, test the OAuth flow:
+
+1. Open browser: https://games.agames.cv/accounts/google/login/
+
+2. Click "Sign in with Google"
+
+3. You should see Google's consent screen
+
+4. After consent, you should be redirected back to: https://games.agames.cv/...
+
+✅ SUCCESS: If you're redirected back without errors
+
+❌ ERROR CODES:
+   - "redirect_uri_mismatch" → Check that the redirect URI in Google Console
+                                 matches EXACTLY (trailing slash matters!)
+   - CORS error → Check JavaScript origins in Google Console
+   - "unauthorized_client" → Check Firebase authorized domains
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  YOUR CURRENT CONFIGURATION (as detected from Django settings)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Django Allauth callback path:
+  /accounts/google/login/callback/
+
+Google Client ID:
+  your-client-id.apps.googleusercontent.com
+
+Full redirect URI:
+  https://games.agames.cv/accounts/google/login/callback/
+
+OAuth scopes requested:
+  - profile
+  - email
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Problem: redirect_uri_mismatch
+Solution: 
+  - Ensure the URI in Google Console is EXACTLY:
+    https://games.agames.cv/accounts/google/login/callback/
+  - Check for trailing slash (Django Allauth requires it)
+
+Problem: CORS error in browser console
+Solution:
+  - Add https://games.agames.cv to "Authorized JavaScript origins"
+
+Problem: Firebase authentication fails
+Solution:
+  - Ensure "games.agames.cv" is in Firebase → Authentication → Authorized domains
+  - Wait 5-10 minutes for changes to propagate
+
+Problem: Still seeing old IP/domain in OAuth flow
+Solution:
+  - Clear browser cache and cookies
+  - Try incognito/private mode
+  - Check Django settings.py CORS_ALLOWED_ORIGINS includes https://games.agames.cv
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ADDITIONAL INFORMATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Server configuration updated:
+  ✅ Django CORS_ALLOWED_ORIGINS: includes https://games.agames.cv
+  ✅ Django CSRF_TRUSTED_ORIGINS: includes https://games.agames.cv
+  ✅ Nginx SSL certificate: valid for games.agames.cv
+  ✅ HTTPS redirect: active
+
+What's left:
+  ⏳ Add domains to Google OAuth client (manual step above)
+  ⏳ Add domain to Firebase authorized domains (manual step above)
+  ⏳ Test OAuth flow after adding
+
+
+Need help?
+  - Check logs: tail -f /root/game/logs/security.log
+  - View current settings: /root/game/gamezone/settings.py
+  - Full docs: /root/game/docs/GOOGLE_FIREBASE_OAUTH_INSTRUCTIONS.md
+

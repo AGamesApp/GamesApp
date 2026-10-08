@@ -1,0 +1,206 @@
+{% extends 'customadmin/base.html' %}
+
+{% block title %}Games{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🎮 Games</h1>
+    <div class="page-actions">
+        <a href="{% url 'customadmin:dashboard' %}" class="btn btn-secondary">← Back</a>
+        <a href="{% url 'customadmin:game_create' %}" class="btn btn-primary">+ Add New Game</a>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="card mb-3">
+    <form method="get" action="{% url 'customadmin:game_list' %}" id="filterForm">
+        <!-- Search Input -->
+        <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="margin-bottom: 0.5rem; font-weight: 500;">🔍 Search by title, region, or genre:</label>
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" name="search" class="form-control" placeholder="Search games..." value="{{ search }}" style="flex: 1;">
+                <button type="submit" class="btn btn-primary">Search</button>
+                {% if search or selected_emulators %}
+                    <a href="{% url 'customadmin:game_list' %}" class="btn btn-secondary">Clear All</a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Emulator Filter -->
+        <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" style="margin-bottom: 0.5rem; font-weight: 500;">🎮 Filter by Emulator:</label>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 0.5rem 0;">
+                {% for emulator in all_emulators %}
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; background: rgba(30, 41, 59, 0.3); padding: 0.5rem 1rem; border-radius: var(--border-radius); border: 1px solid var(--border-color); transition: all 0.2s;" class="emulator-checkbox">
+                        <input type="checkbox" 
+                               name="emulator" 
+                               value="{{ emulator.id }}" 
+                               {% if emulator.id|stringformat:"s" in selected_emulators %}checked{% endif %}
+                               onchange="document.getElementById('filterForm').submit()"
+                               style="cursor: pointer;">
+                        <span>{{ emulator.name }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+    </form>
+</div>
+
+{% if search or selected_emulators %}
+<div style="padding: 1rem; background: rgba(99, 102, 241, 0.1); border-left: 3px solid var(--primary); margin-bottom: 1rem; border-radius: var(--border-radius);">
+    <strong>Filters Applied:</strong>
+    {% if search %}
+        <span style="background: rgba(99, 102, 241, 0.2); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.9rem; margin-left: 0.5rem;">
+            Search: "{{ search }}"
+        </span>
+    {% endif %}
+    {% if selected_emulators %}
+        {% for emulator in all_emulators %}
+            {% if emulator.id|stringformat:"s" in selected_emulators %}
+                <span style="background: rgba(99, 102, 241, 0.2); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.9rem; margin-left: 0.5rem;">
+                    {{ emulator.name }}
+                </span>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    <br>
+    Found {{ total_results }} game{{ total_results|pluralize }}
+</div>
+{% endif %}
+
+<!-- Games Table -->
+<div class="table-container">
+    <form id="bulkDeleteForm" method="post" action="{% url 'customadmin:game_bulk_delete' %}">
+        {% csrf_token %}
+        <div style="margin-bottom: 1rem;">
+            <button type="button" class="btn btn-danger" onclick="bulkDeleteGames()" id="bulkDeleteBtn" style="display:none;">
+                🗑️ Delete Selected (<span id="selectedCount">0</span>)
+            </button>
+        </div>
+        <table class="table" id="dataTable">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)"></th>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Emulator</th>
+                    <th>Genres</th>
+                    <th>Region</th>
+                <th>Premium</th>
+                <th>Year</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for game in games %}
+            <tr>
+                <td><input type="checkbox" name="game_ids[]" value="{{ game.id }}" class="game-checkbox" onchange="updateBulkDeleteButton()"></td>
+                <td>{{ game.id }}</td>
+                <td>
+                    <strong>{{ game.title }}</strong>
+                </td>
+                <td>{{ game.emulator.name }}</td>
+                <td>
+                    {% for genre in game.genres.all %}
+                        <span style="background: rgba(99, 102, 241, 0.2); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem; margin-right: 0.25rem;">
+                            {{ genre.name }}
+                        </span>
+                    {% empty %}
+                        <span style="color: var(--text-muted); font-size: 0.85rem;">No genres</span>
+                    {% endfor %}
+                </td>
+                <td>{{ game.region|default:"—" }}</td>
+                <td>
+                    {% if game.is_premium %}
+                        <span style="color: var(--warning);">⭐ Yes</span>
+                    {% else %}
+                        <span style="color: var(--text-muted);">No</span>
+                    {% endif %}
+                </td>
+                <td>{{ game.year|default:"—" }}</td>
+                <td>
+                    <div class="btn-group">
+                        <a href="{% url 'customadmin:game_edit' game.pk %}" class="btn btn-secondary btn-sm">✏️ Edit</a>
+                        <a href="{% url 'customadmin:game_delete' game.pk %}" class="btn btn-danger btn-sm" onclick="return confirmDelete('{{ game.title }}')">🗑️ Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9" class="text-center text-muted">
+                    No games found. <a href="{% url 'customadmin:game_create' %}" style="color: var(--primary-light);">Add your first game</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </form>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1{% if search %}&search={{ search }}{% endif %}{% for emu_id in selected_emulators %}&emulator={{ emu_id }}{% endfor %}">« First</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}{% for emu_id in selected_emulators %}&emulator={{ emu_id }}{% endfor %}">‹ Previous</a>
+    {% endif %}
+    
+    <span class="active">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}{% for emu_id in selected_emulators %}&emulator={{ emu_id }}{% endfor %}">Next ›</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}{% for emu_id in selected_emulators %}&emulator={{ emu_id }}{% endfor %}">Last »</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<style>
+    .emulator-checkbox:hover {
+        background: rgba(99, 102, 241, 0.2) !important;
+        border-color: var(--primary) !important;
+    }
+    
+    .emulator-checkbox:has(input:checked) {
+        background: rgba(99, 102, 241, 0.3) !important;
+        border-color: var(--primary) !important;
+        font-weight: 500;
+    }
+    
+    .emulator-checkbox input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--primary);
+    }
+</style>
+
+<script>
+function toggleSelectAll(checkbox) {
+    const checkboxes = document.querySelectorAll('.game-checkbox');
+    checkboxes.forEach(cb => cb.checked = checkbox.checked);
+    updateBulkDeleteButton();
+}
+
+function updateBulkDeleteButton() {
+    const checkboxes = document.querySelectorAll('.game-checkbox:checked');
+    const count = checkboxes.length;
+    const btn = document.getElementById('bulkDeleteBtn');
+    const countSpan = document.getElementById('selectedCount');
+    
+    if (count > 0) {
+        btn.style.display = 'inline-block';
+        countSpan.textContent = count;
+    } else {
+        btn.style.display = 'none';
+    }
+}
+
+function bulkDeleteGames() {
+    const count = document.querySelectorAll('.game-checkbox:checked').length;
+    if (count === 0) return;
+    
+    if (confirm(`Are you sure you want to delete ${count} game(s)? This action cannot be undone.`)) {
+        document.getElementById('bulkDeleteForm').submit();
+    }
+}
+</script>
+{% endblock %}

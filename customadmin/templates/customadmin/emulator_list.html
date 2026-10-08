@@ -1,0 +1,107 @@
+{% extends 'customadmin/base.html' %}
+
+{% block title %}Emulators{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">💻 Emulators</h1>
+    <div class="page-actions">
+        <a href="{% url 'customadmin:dashboard' %}" class="btn btn-secondary">← Back</a>
+        <a href="{% url 'customadmin:emulator_create' %}" class="btn btn-primary">+ Add New Emulator</a>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="card mb-3">
+    <form method="get" action="{% url 'customadmin:emulator_list' %}">
+        <div class="form-group" style="margin-bottom: 0;">
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" name="search" class="form-control" placeholder="🔍 Search emulators by name..." value="{{ search }}" style="flex: 1;">
+                <button type="submit" class="btn btn-primary">Search</button>
+                {% if search %}
+                    <a href="{% url 'customadmin:emulator_list' %}" class="btn btn-secondary">Clear</a>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+</div>
+
+{% if search %}
+<div style="padding: 1rem; background: rgba(99, 102, 241, 0.1); border-left: 3px solid var(--primary); margin-bottom: 1rem; border-radius: var(--border-radius);">
+    <strong>Search Results:</strong> Found {{ total_results }} emulator{{ total_results|pluralize }} matching "{{ search }}"
+</div>
+{% endif %}
+
+<!-- Emulators Table -->
+<div class="table-container">
+    <table class="table" id="dataTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Icon</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for emulator in emulators %}
+            <tr>
+                <td>{{ emulator.id }}</td>
+                <td>
+                    {% if emulator.icon %}
+                        <img src="{{ emulator.icon.url }}" alt="{{ emulator.name }}" 
+                             style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color);">
+                    {% else %}
+                        <div style="width: 40px; height: 40px; background: rgba(99, 102, 241, 0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                            💻
+                        </div>
+                    {% endif %}
+                </td>
+                <td>
+                    <strong>{{ emulator.name }}</strong>
+                </td>
+                <td>
+                    {% if emulator.description %}
+                        {{ emulator.description|truncatewords:15 }}
+                    {% else %}
+                        <span class="text-muted">No description</span>
+                    {% endif %}
+                </td>
+                <td>{{ emulator.created_at|date:"M d, Y" }}</td>
+                <td>
+                    <div class="btn-group">
+                        <a href="{% url 'customadmin:emulator_edit' emulator.pk %}" class="btn btn-secondary btn-sm">✏️ Edit</a>
+                        <a href="{% url 'customadmin:emulator_delete' emulator.pk %}" class="btn btn-danger btn-sm" onclick="return confirmDelete('{{ emulator.name }}')">🗑️ Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center text-muted">
+                    No emulators found. <a href="{% url 'customadmin:emulator_create' %}" style="color: var(--primary-light);">Add your first emulator</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1{% if search %}&search={{ search }}{% endif %}">« First</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}">‹ Previous</a>
+    {% endif %}
+    
+    <span class="active">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}">Next ›</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}">Last »</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'customadmin/base.html' %}
+
+{% block content %}
+<h1>Reviews</h1>
+<form method="get" class="form-inline mb-2">
+  <input type="text" name="search" value="{{ request.GET.search }}" class="form-control" placeholder="Search text, user email, or game title">
+  <select name="rating" class="form-control ml-2">
+    <option value="">All Stars</option>
+    <option value="1" {% if request.GET.rating == '1' %}selected{% endif %}>⭐ 1 Star</option>
+    <option value="2" {% if request.GET.rating == '2' %}selected{% endif %}>⭐ 2 Stars</option>
+    <option value="3" {% if request.GET.rating == '3' %}selected{% endif %}>⭐ 3 Stars</option>
+    <option value="4" {% if request.GET.rating == '4' %}selected{% endif %}>⭐ 4 Stars</option>
+    <option value="5" {% if request.GET.rating == '5' %}selected{% endif %}>⭐ 5 Stars</option>
+  </select>
+  <button class="btn btn-secondary ml-2">Filter</button>
+</form>
+
+<form id="bulkDeleteReviewsForm" method="post" action="{% url 'customadmin:review_bulk_delete' %}">
+  {% csrf_token %}
+  <div style="margin-bottom: 1rem;">
+    <button type="button" class="btn btn-danger" onclick="bulkDeleteReviews()" id="bulkDeleteReviewsBtn" style="display:none;">
+      🗑️ Delete Selected (<span id="selectedReviewsCount">0</span>)
+    </button>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr><th><input type="checkbox" id="selectAllReviews" onchange="toggleSelectAllReviews(this)"></th><th>ID</th><th>User</th><th>Emulator</th><th>Game</th><th>Score</th><th>Excerpt</th><th>Created</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+    {% for r in reviews %}
+    <tr>
+      <td><input type="checkbox" name="review_ids[]" value="{{ r.id }}" class="review-checkbox" onchange="updateBulkDeleteReviewsButton()"></td>
+      <td>{{ r.id }}</td>
+      <td>{{ r.user.email }}</td>
+      <td>{{ r.game.emulator.name }}</td>
+      <td>{{ r.game.title }}</td>
+      <td>
+        <span class="badge badge-primary">{{ r.rating_score|default:"N/A" }}</span>
+      </td>
+      <td>{{ r.review|truncatechars:80 }}</td>
+      <td>{{ r.created_at|date:"Y-m-d H:i" }}</td>
+      <td>
+        <form method="post" action="{% url 'customadmin:review_delete' r.id %}">{% csrf_token %}
+          <button class="btn btn-danger btn-sm" onclick="return confirm('Delete this review?');">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="9">No reviews found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+</form>
+{% if is_paginated %}
+<nav aria-label="Page navigation">
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+    {% endif %}
+    <li class="page-item disabled"><a class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</a></li>
+    {% if page_obj.has_next %}
+    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+<script>
+function toggleSelectAllReviews(checkbox) {
+  const checkboxes = document.querySelectorAll('.review-checkbox');
+  checkboxes.forEach(cb => cb.checked = checkbox.checked);
+  updateBulkDeleteReviewsButton();
+}
+
+function updateBulkDeleteReviewsButton() {
+  const checkboxes = document.querySelectorAll('.review-checkbox:checked');
+  const count = checkboxes.length;
+  const btn = document.getElementById('bulkDeleteReviewsBtn');
+  const countSpan = document.getElementById('selectedReviewsCount');
+  
+  if (count > 0) {
+    btn.style.display = 'inline-block';
+    countSpan.textContent = count;
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+function bulkDeleteReviews() {
+  const count = document.querySelectorAll('.review-checkbox:checked').length;
+  if (count === 0) return;
+  
+  if (confirm(`Are you sure you want to delete ${count} review(s)? This action cannot be undone.`)) {
+    document.getElementById('bulkDeleteReviewsForm').submit();
+  }
+}
+</script>
+{% endblock %}

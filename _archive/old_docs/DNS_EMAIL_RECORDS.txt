@@ -1,0 +1,233 @@
+================================================================================
+DNS RECORDS FOR EMAIL - COPY & PASTE GUIDE
+================================================================================
+
+Domain: games.agames.cv
+Add these records in Spaceship DNS Manager
+
+================================================================================
+RECORD 1: SPF (Required)
+================================================================================
+
+Type:     TXT
+Host:     @
+Value:    v=spf1 a mx ip4:152.53.206.21 ~all
+TTL:      3600 (or Auto)
+
+Purpose: Authorizes your server to send emails from @games.agames.cv
+
+
+================================================================================
+RECORD 2: DMARC (Required)
+================================================================================
+
+Type:     TXT
+Host:     _dmarc
+Value:    v=DMARC1; p=none; rua=mailto:admin@games.agames.cv
+TTL:      3600 (or Auto)
+
+Purpose: Email authentication policy and reporting
+
+
+================================================================================
+RECORD 3: MX (Optional but Recommended)
+================================================================================
+
+Type:      MX
+Host:      @
+Priority:  10
+Value:     games.agames.cv
+TTL:       3600 (or Auto)
+
+Purpose: Tells mail servers where to deliver incoming emails
+
+
+================================================================================
+HOW TO ADD IN SPACESHIP (STEP BY STEP)
+================================================================================
+
+1. Go to: https://www.spaceship.com
+2. Log in to your account
+3. Click "Domains" in the menu
+4. Click on "games.agames.cv"
+5. Click "DNS" or "DNS Management"
+6. Click "Add Record" button
+
+FOR SPF RECORD:
+  - Select Type: TXT
+  - Host/Name: @ (or leave blank)
+  - Value/Content: v=spf1 a mx ip4:152.53.206.21 ~all
+  - Click Save
+
+FOR DMARC RECORD:
+  - Select Type: TXT
+  - Host/Name: _dmarc
+  - Value/Content: v=DMARC1; p=none; rua=mailto:admin@games.agames.cv
+  - Click Save
+
+FOR MX RECORD:
+  - Select Type: MX
+  - Host/Name: @ (or leave blank)
+  - Priority: 10
+  - Value/Content: games.agames.cv
+  - Click Save
+
+7. Wait 5-15 minutes for DNS propagation
+
+
+================================================================================
+VERIFICATION COMMANDS
+================================================================================
+
+After adding records, verify with these commands on your server:
+
+# Check SPF record
+dig TXT games.agames.cv
+
+# Check DMARC record
+dig TXT _dmarc.games.agames.cv
+
+# Check MX record
+dig MX games.agames.cv
+
+
+================================================================================
+EXPECTED RESULTS
+================================================================================
+
+SPF should show:
+  games.agames.cv. 3600 IN TXT "v=spf1 a mx ip4:152.53.206.21 ~all"
+
+DMARC should show:
+  _dmarc.games.agames.cv. 3600 IN TXT "v=DMARC1; p=none; rua=mailto:admin@games.agames.cv"
+
+MX should show:
+  games.agames.cv. 3600 IN MX 10 games.agames.cv.
+
+
+================================================================================
+NETCUP rDNS (PTR) SETUP
+================================================================================
+
+Change reverse DNS in Netcup Customer Control Panel:
+
+1. Go to: https://www.customercontrolpanel.de
+2. Log in to your Netcup account
+3. Click "Products" → "vServer" (or "Root Server")
+4. Select your server
+5. Go to "Network" or "IP Addresses" section
+6. Find IP: 152.53.206.21
+7. Click "Edit" or pencil icon next to "Reverse DNS"
+8. Set rDNS/PTR to: games.agames.cv
+9. Save changes
+10. Wait 5-15 minutes for propagation
+
+OR open a support ticket:
+
+   Subject: Change Reverse DNS for 152.53.206.21
+   
+   Message:
+   Hello,
+   
+   Please change the reverse DNS (PTR) record for:
+   IP: 152.53.206.21
+   Current rDNS: v2202512320709413627.quicksrv.de
+   New rDNS: games.agames.cv
+   
+   This is for my mail server configuration.
+   Forward DNS (A record) is already set.
+   
+   Thank you!
+
+
+================================================================================
+WHAT THESE RECORDS DO
+================================================================================
+
+SPF (Sender Policy Framework):
+  - Prevents email spoofing
+  - Tells receiving servers: "152.53.206.21 is authorized to send mail for games.agames.cv"
+  - Reduces spam score
+
+DMARC (Domain-based Message Authentication):
+  - Provides authentication policy
+  - Sends reports to admin@games.agames.cv about email delivery
+  - Works with SPF to validate emails
+
+MX (Mail Exchange):
+  - Tells servers where to deliver incoming mail for @games.agames.cv
+  - Not strictly required for sending, but good practice
+
+rDNS/PTR (Reverse DNS):
+  - Maps IP back to domain name
+  - Many mail servers check this
+  - Critical for deliverability
+
+
+================================================================================
+TESTING AFTER SETUP
+================================================================================
+
+Wait 15-30 minutes after adding DNS records, then test:
+
+1. Send test email:
+   cd /root/game
+   source venv/bin/activate
+   python manage.py shell
+   
+   >>> from django.core.mail import send_mail
+   >>> send_mail('Test', 'Testing DNS', 'noreply@games.agames.cv', ['youremail@gmail.com'])
+
+2. Check if received (check spam folder too)
+
+3. View email headers to verify SPF/DMARC pass:
+   - In Gmail: Open email → Three dots → "Show original"
+   - Look for: "SPF: PASS" and "DMARC: PASS"
+
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+If emails still go to spam:
+  - Check DNS propagation (wait longer)
+  - Verify SPF record is correct
+  - Check rDNS is set
+  - Test deliverability at: mail-tester.com
+
+If DNS records not showing:
+  - Clear DNS cache: sudo systemd-resolve --flush-caches
+  - Check with different DNS: dig @8.8.8.8 TXT games.agames.cv
+  - Wait longer (can take up to 48h, usually <1h)
+
+
+================================================================================
+QUICK COPY-PASTE VALUES
+================================================================================
+
+SPF:    v=spf1 a mx ip4:152.53.206.21 ~all
+DMARC:  v=DMARC1; p=none; rua=mailto:admin@games.agames.cv
+MX:     games.agames.cv (priority 10)
+rDNS:   games.agames.cv
+
+
+================================================================================
+STATUS CHECKLIST
+================================================================================
+
+Before adding DNS records:
+□ Postfix installed and running
+□ Django configured to use localhost:25
+□ Test email sent successfully
+
+After adding DNS records:
+□ SPF record added in Spaceship
+□ DMARC record added in Spaceship
+□ MX record added in Spaceship (optional)
+□ rDNS set in Hetzner (if possible)
+□ Waited 15+ minutes
+□ Verified with dig commands
+□ Tested email delivery
+□ Checked email headers (SPF/DMARC PASS)
+
+================================================================================

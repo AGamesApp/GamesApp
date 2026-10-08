@@ -1,0 +1,94 @@
+{% extends 'customadmin/base.html' %}
+
+{% block title %}Manage Pages{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📄 Manage Pages</h1>
+    <div class="page-actions">
+        <a href="{% url 'customadmin:page_create' %}" class="btn btn-primary">+ Create Page</a>
+    </div>
+</div>
+
+<!-- Search -->
+<div class="card">
+    <div class="card-body">
+        <form method="get" class="search-form">
+            <input type="text" 
+                   name="search" 
+                   class="search-input" 
+                   placeholder="Search pages..." 
+                   value="{{ search }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+            {% if search %}
+                <a href="{% url 'customadmin:page_list' %}" class="btn btn-secondary">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Pages List -->
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">All Pages</h2>
+        <span class="badge">{{ pages|length }} page{{ pages|length|pluralize }}</span>
+    </div>
+    <div class="card-body">
+        {% if pages %}
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Last Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for page in pages %}
+                        <tr>
+                            <td>
+                                <strong>{{ page.title }}</strong>
+                            </td>
+                            <td>{{ page.updated_at|date:"M d, Y - g:i A" }}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{% url 'customadmin:page_edit' page.pk %}" class="btn btn-sm btn-secondary">✏️ Edit</a>
+                                    <a href="{% url 'customadmin:page_delete' page.pk %}" class="btn btn-sm btn-danger">🗑️ Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1{% if search %}&search={{ search }}{% endif %}" class="page-link">First</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}" class="page-link">Previous</a>
+                {% endif %}
+                
+                <span class="page-info">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+                
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}" class="page-link">Next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}" class="page-link">Last</a>
+                {% endif %}
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📄</div>
+                <h3>No pages found</h3>
+                <p>{% if search %}No pages match your search.{% else %}Get started by creating your first page.{% endif %}</p>
+                <a href="{% url 'customadmin:page_create' %}" class="btn btn-primary">+ Create Page</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

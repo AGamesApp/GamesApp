@@ -1,0 +1,30 @@
+{% extends 'customadmin/base.html' %}
+
+{% block title %}Delete Page{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🗑️ Delete Page</h1>
+    <div class="page-actions">
+        <a href="{% url 'customadmin:page_list' %}" class="btn btn-secondary">← Back to List</a>
+    </div>
+</div>
+
+<div class="card" style="border: 2px solid var(--danger-color);">
+    <div class="card-body">
+        <div class="alert alert-danger">
+            <h3>⚠️ Are you sure?</h3>
+            <p>You are about to permanently delete the page titled <strong>"{{ object.title }}"</strong>.</p>
+            <p>This action cannot be undone.</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-danger">Yes, Delete This Page</button>
+                <a href="{% url 'customadmin:page_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

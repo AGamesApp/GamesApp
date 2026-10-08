@@ -1,0 +1,452 @@
+{% extends 'customadmin/base.html' %}
+{% load static %}
+
+{% block title %}Send Push Notification{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notification-form-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+    
+    .notification-card {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    .form-section:last-child {
+        margin-bottom: 0;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+    }
+    
+    .form-label .required {
+        color: #ef4444;
+        margin-left: 0.25rem;
+    }
+    
+    .form-label .optional {
+        color: var(--text-muted);
+        font-weight: 400;
+        font-size: 0.85rem;
+        margin-left: 0.5rem;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-light);
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    select.form-control {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        cursor: pointer;
+    }
+    
+    select.form-control option {
+        background: #1a1d2e;
+        color: var(--text-primary);
+        padding: 0.5rem;
+    }
+    
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+        font-family: inherit;
+    }
+    
+    .form-help {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+    
+    .preview-section {
+        background: rgba(99, 102, 241, 0.05);
+        border: 2px dashed rgba(99, 102, 241, 0.3);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .preview-title {
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--primary-light);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .preview-device {
+        background: var(--card-bg);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        max-width: 400px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .preview-notification-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary);
+        word-wrap: break-word;
+    }
+    
+    .preview-notification-body {
+        color: var(--text-secondary);
+        line-height: 1.5;
+        margin-bottom: 1rem;
+        word-wrap: break-word;
+    }
+    
+    .preview-image {
+        margin-top: 1rem;
+        border-radius: 8px;
+        overflow: hidden;
+        display: none;
+    }
+    
+    .preview-image.show {
+        display: block;
+    }
+    
+    .preview-image img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 8px;
+    }
+    
+    .preview-image-error {
+        padding: 2rem;
+        text-align: center;
+        background: rgba(239, 68, 68, 0.1);
+        border: 2px dashed rgba(239, 68, 68, 0.3);
+        border-radius: 8px;
+        color: #ef4444;
+        font-size: 0.9rem;
+    }
+    
+    .preview-app-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .btn-primary {
+        flex: 1;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+    }
+    
+    .btn-secondary {
+        padding: 1rem 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .stats-info {
+        background: rgba(34, 197, 94, 0.1);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .stats-icon {
+        font-size: 2rem;
+    }
+    
+    .stats-text {
+        flex: 1;
+    }
+    
+    .stats-text strong {
+        color: #22c55e;
+        font-size: 1.1rem;
+    }
+    
+    .stats-text p {
+        margin: 0.25rem 0 0 0;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📱 Send Push Notification</h1>
+    <div class="page-actions">
+        <a href="{% url 'customadmin:dashboard' %}" class="btn-secondary">
+            ← Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="notification-form-container">
+    <div class="stats-info">
+        <div class="stats-icon">📊</div>
+        <div class="stats-text">
+            <strong>{{ active_devices }} Active Devices</strong>
+            <p>Notification will be sent to ALL users who have the app installed (including those without accounts)</p>
+        </div>
+    </div>
+    
+    <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: start; gap: 1rem;">
+            <div style="font-size: 1.5rem;">ℹ️</div>
+            <div>
+                <strong style="color: var(--primary-light);">How it works:</strong>
+                <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: var(--text-muted);">
+                    • <strong>Push Notification</strong> → Sent to ALL {{ active_devices }} devices (users with or without accounts)<br>
+                    • <strong>In-App History</strong> → Saved only for users who have created accounts<br>
+                    • <strong>No login required</strong> → Even anonymous app users will receive your notification
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification-card">
+        <form method="post" id="notificationForm">
+            {% csrf_token %}
+            
+            <div class="form-section">
+                <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);">📝 Notification Content</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        Title
+                        <span class="required">*</span>
+                    </label>
+                    <input 
+                        type="text" 
+                        name="title" 
+                        id="title"
+                        class="form-control" 
+                        placeholder="e.g., Weekend Sale! 🎉"
+                        required
+                        maxlength="200"
+                    >
+                    <span class="form-help">Keep it short and attention-grabbing (max 200 characters)</span>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        Message
+                        <span class="required">*</span>
+                    </label>
+                    <textarea 
+                        name="body" 
+                        id="body"
+                        class="form-control" 
+                        placeholder="e.g., Get 50% off on all premium games this weekend only! Limited time offer."
+                        required
+                        maxlength="500"
+                    ></textarea>
+                    <span class="form-help">Clear and compelling message (max 500 characters)</span>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        Notification Type
+                        <span class="required">*</span>
+                    </label>
+                    <select 
+                        name="notification_type" 
+                        id="notification_type"
+                        class="form-control"
+                        required
+                    >
+                        <option value="normal" selected>📢 Normal - General news and announcements</option>
+                        <option value="fix">🔧 Fix - Bug fixes solved</option>
+                        <option value="update">🆙 Update - New features or games added</option>
+                        <option value="error">⚠️ Error - Important alerts and warnings</option>
+                    </select>
+                    <span class="form-help">Choose notification category (Normal for general messages)</span>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        Image URL
+                        <span class="optional">(optional)</span>
+                    </label>
+                    <input 
+                        type="url" 
+                        name="image_url" 
+                        id="image_url"
+                        class="form-control" 
+                        placeholder="https://example.com/image.jpg"
+                    >
+                    <span class="form-help">Optional: Add an image to make your notification more engaging. Must be a publicly accessible URL.</span>
+                </div>
+            </div>
+            
+            <div class="preview-section">
+                <div class="preview-title">
+                    📲 Live Preview
+                </div>
+                <div class="preview-device">
+                    <div class="preview-app-icon">🎮</div>
+                    <div class="preview-notification-title" id="previewTitle">
+                        Your notification title will appear here
+                    </div>
+                    <div class="preview-notification-body" id="previewBody">
+                        Your notification message will appear here
+                    </div>
+                    <div class="preview-image" id="previewImageContainer">
+                        <img id="previewImage" src="" alt="Notification image preview">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <a href="{% url 'customadmin:dashboard' %}" class="btn-secondary">
+                    Cancel
+                </a>
+                <button type="submit" class="btn-primary">
+                    <span>📤</span>
+                    Send Notification
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Live preview functionality
+    const titleInput = document.getElementById('title');
+    const bodyInput = document.getElementById('body');
+    const imageUrlInput = document.getElementById('image_url');
+    const previewTitle = document.getElementById('previewTitle');
+    const previewBody = document.getElementById('previewBody');
+    const previewImageContainer = document.getElementById('previewImageContainer');
+    const previewImage = document.getElementById('previewImage');
+    
+    // Update preview title
+    titleInput.addEventListener('input', function() {
+        const value = this.value.trim();
+        previewTitle.textContent = value || 'Your notification title will appear here';
+    });
+    
+    // Update preview body
+    bodyInput.addEventListener('input', function() {
+        const value = this.value.trim();
+        previewBody.textContent = value || 'Your notification message will appear here';
+    });
+    
+    // Update preview image
+    imageUrlInput.addEventListener('input', function() {
+        const url = this.value.trim();
+        
+        if (url) {
+            previewImage.src = url;
+            previewImageContainer.classList.add('show');
+            
+            // Handle image load error
+            previewImage.onerror = function() {
+                previewImageContainer.innerHTML = '<div class="preview-image-error">⚠️ Unable to load image. Please check the URL.</div>';
+            };
+            
+            // Handle image load success
+            previewImage.onload = function() {
+                previewImageContainer.innerHTML = '<img id="previewImage" src="' + url + '" alt="Notification image preview">';
+            };
+        } else {
+            previewImageContainer.classList.remove('show');
+            previewImageContainer.innerHTML = '<img id="previewImage" src="" alt="Notification image preview">';
+        }
+    });
+    
+    // Form validation
+    document.getElementById('notificationForm').addEventListener('submit', function(e) {
+        const title = titleInput.value.trim();
+        const body = bodyInput.value.trim();
+        
+        if (!title || !body) {
+            e.preventDefault();
+            alert('Please fill in both title and message fields.');
+            return false;
+        }
+        
+        // Confirm before sending
+        if (!confirm(`Send notification to ${document.querySelector('.stats-text strong').textContent}?`)) {
+            e.preventDefault();
+            return false;
+        }
+    });
+</script>
+{% endblock %}

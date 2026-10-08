@@ -1,0 +1,96 @@
+{% extends 'customadmin/base.html' %}
+
+{% block title %}Genres{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">🎮 Genres</h1>
+    <div class="page-actions">
+        <a href="{% url 'customadmin:dashboard' %}" class="btn btn-secondary">← Back</a>
+        <a href="{% url 'customadmin:genre_create' %}" class="btn btn-primary">+ Add New Genre</a>
+    </div>
+</div>
+
+<!-- Search Bar -->
+<div class="card mb-3">
+    <form method="get" action="{% url 'customadmin:genre_list' %}">
+        <div class="form-group" style="margin-bottom: 0;">
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" name="search" class="form-control" placeholder="🔍 Search genres by name..." value="{{ search }}" style="flex: 1;">
+                <button type="submit" class="btn btn-primary">Search</button>
+                {% if search %}
+                    <a href="{% url 'customadmin:genre_list' %}" class="btn btn-secondary">Clear</a>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+</div>
+
+{% if search %}
+<div style="padding: 1rem; background: rgba(99, 102, 241, 0.1); border-left: 3px solid var(--primary); margin-bottom: 1rem; border-radius: var(--border-radius);">
+    <strong>Search Results:</strong> Found {{ total_results }} genre{{ total_results|pluralize }} matching "{{ search }}"
+</div>
+{% endif %}
+
+<!-- Genres Table -->
+<div class="table-container">
+    <table class="table" id="dataTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for genre in genres %}
+            <tr>
+                <td>{{ genre.id }}</td>
+                <td>
+                    <span style="background: rgba(99, 102, 241, 0.2); padding: 0.5rem 1rem; border-radius: 20px; font-weight: 500;">
+                        🎮 {{ genre.name }}
+                    </span>
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <a href="{% url 'customadmin:genre_edit' genre.pk %}" class="btn btn-secondary btn-sm">✏️ Edit</a>
+                        <a href="{% url 'customadmin:genre_delete' genre.pk %}" class="btn btn-danger btn-sm" onclick="return confirmDelete('{{ genre.name }}')">🗑️ Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" class="text-center text-muted">
+                    No genres found. <a href="{% url 'customadmin:genre_create' %}" style="color: var(--primary-light);">Add your first genre</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1{% if search %}&search={{ search }}{% endif %}" class="page-link">First</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}" class="page-link">Previous</a>
+    {% endif %}
+    
+    <span class="page-info">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+    
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}" class="page-link">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}{% if search %}&search={{ search }}{% endif %}" class="page-link">Last</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<script>
+    function confirmDelete(name) {
+        return confirm(`Are you sure you want to delete the genre "${name}"?`);
+    }
+</script>
+{% endblock %}

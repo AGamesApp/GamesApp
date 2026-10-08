@@ -1,0 +1,1032 @@
+{% extends 'customadmin/base.html' %}
+
+{% block title %}Support Messages - Custom Admin{% endblock %}
+
+{% block content %}
+<!-- Hide Django messages - we use toast notifications instead -->
+<style>
+    .messages {
+        display: none !important;
+    }
+</style>
+
+<div class="content-header">
+    <h1>💬 Support Messages</h1>
+    <p>Manage customer support inquiries and feedback</p>
+</div>
+
+<!-- Action Bar -->
+<div class="action-bar" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+    <div class="filter-tabs" style="flex: 1; border: none; padding: 0;">
+        <a href="?status=pending" class="filter-tab {% if filter_status == 'pending' %}active{% endif %}">
+            Pending <span class="badge badge-warning">{{ pending_count }}</span>
+        </a>
+        <a href="?status=reviewed" class="filter-tab {% if filter_status == 'reviewed' %}active{% endif %}">
+            Reviewed <span class="badge badge-success">{{ reviewed_count }}</span>
+        </a>
+    </div>
+    
+    <div id="action-buttons" style="display: flex; gap: 10px;">
+        <!-- Buttons will be shown/hidden based on active tab -->
+        <button id="btn-mark-all-reviewed" class="btn-mark-all-reviewed" style="background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: none;">
+            ✓ Mark All as Reviewed
+        </button>
+        
+        <button id="btn-delete-all" class="btn-delete-all" style="background: #dc3545; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; display: none;">
+            🗑️ Delete All
+        </button>
+    </div>
+</div>
+
+<!-- Messages List -->
+<div class="messages-container">
+    {% if messages %}
+        {% for msg in messages %}
+        <div class="message-card {% if msg.is_reviewed %}reviewed{% else %}pending{% endif %}" data-message-id="{{ msg.id }}">
+            <div class="message-header">
+                <div class="message-info">
+                    <h3 class="message-subject">
+                        {% if msg.is_reviewed %}
+                            <span class="status-icon reviewed" title="Reviewed">✓</span>
+                        {% else %}
+                            <span class="status-icon pending" title="Pending">●</span>
+                        {% endif %}
+                        {{ msg.subject }}
+                    </h3>
+                    <div class="message-meta">
+                        <span class="meta-item">
+                            <strong>From:</strong> {{ msg.name }} 
+                            {% if msg.user %}
+                                ({{ msg.user.username }})
+                            {% endif %}
+                        </span>
+                        <span class="meta-item">
+                            <strong>Email:</strong> <a href="mailto:{{ msg.email }}">{{ msg.email }}</a>
+                        </span>
+                        <span class="meta-item">
+                            <strong>Date:</strong> {{ msg.created_at|date:"M d, Y H:i" }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="message-actions">
+                    <form method="post" action="{% url 'customadmin:toggle_review' msg.id %}" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.path }}">
+                        <button type="submit" 
+                                class="btn-toggle-review {% if msg.is_reviewed %}btn-mark-pending{% else %}btn-mark-reviewed{% endif %}">
+                            {% if msg.is_reviewed %}
+                                Mark as Pending
+                            {% else %}
+                                ✓ Mark as Reviewed
+                            {% endif %}
+                        </button>
+                    </form>
+                    
+                    <button onclick="deleteMessage({{ msg.id }})" 
+                            class="btn-delete-message" 
+                            style="background: #dc3545; color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; margin-left: 10px;">
+                        🗑️ Delete
+                    </button>
+                </div>
+            </div>
+            
+            <div class="message-body">
+                <p>{{ msg.message|linebreaks }}</p>
+            </div>
+            
+            {% if msg.is_reviewed %}
+            <div class="message-footer">
+                <small>
+                    Reviewed by <strong>{{ msg.reviewed_by.username }}</strong>
+                    on {{ msg.reviewed_at|date:"M d, Y H:i" }}
+                </small>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">💬</div>
+            <h2>No Messages Found</h2>
+            <p>
+                {% if filter_status == 'pending' %}
+                    There are no pending support messages at the moment.
+                {% elif filter_status == 'reviewed' %}
+                    There are no reviewed messages yet.
+                {% else %}
+                    No support messages have been submitted yet.
+                {% endif %}
+            </p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .filter-tabs {
+        display: flex;
+        gap: 15px;
+        border-bottom: 2px solid #2a2a2a;
+        padding-bottom: 0;
+    }
+    
+    .filter-tab {
+        padding: 12px 24px;
+        background: #1a1a1a;
+        color: #ccc;
+        text-decoration: none;
+        border-radius: 8px 8px 0 0;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .filter-tab:hover {
+        background: #2a2a2a;
+        color: white;
+    }
+    
+    .filter-tab.active {
+        background: #2a2a2a;
+        color: white;
+        border-bottom: 3px solid #4CAF50;
+    }
+    
+    .badge {
+        background: #444;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.85em;
+        font-weight: bold;
+    }
+    
+    .badge-warning {
+        background: #ffc107;
+        color: #000;
+    }
+    
+    .badge-success {
+        background: #28a745;
+        color: white;
+    }
+    
+    .messages-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .message-card {
+        background: #1a1a1a;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+    
+    .message-card.pending {
+        border-left-color: #ffc107;
+    }
+    
+    .message-card.reviewed {
+        border-left-color: #28a745;
+        opacity: 0.8;
+    }
+    
+    .message-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    
+    .message-header {
+        padding: 20px;
+        background: #2a2a2a;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+    }
+    
+    .message-info {
+        flex: 1;
+    }
+    
+    .message-subject {
+        margin: 0 0 10px 0;
+        color: white;
+        font-size: 1.3em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .status-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        font-size: 14px;
+    }
+    
+    .status-icon.pending {
+        background: #ffc107;
+        color: #000;
+    }
+    
+    .status-icon.reviewed {
+        background: #28a745;
+        color: white;
+    }
+    
+    .message-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        color: #999;
+        font-size: 0.9em;
+    }
+    
+    .meta-item a {
+        color: #4CAF50;
+        text-decoration: none;
+    }
+    
+    .meta-item a:hover {
+        text-decoration: underline;
+    }
+    
+    .message-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .btn-toggle-review {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-mark-reviewed {
+        background: #28a745;
+        color: white;
+    }
+    
+    .btn-mark-reviewed:hover {
+        background: #218838;
+        transform: scale(1.05);
+    }
+    
+    .btn-mark-pending {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .btn-mark-pending:hover {
+        background: #5a6268;
+        transform: scale(1.05);
+    }
+    
+    .message-body {
+        padding: 20px;
+        color: #ddd;
+        line-height: 1.6;
+    }
+    
+    .message-footer {
+        padding: 15px 20px;
+        background: #1a1a1a;
+        border-top: 1px solid #333;
+        color: #999;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: #666;
+    }
+    
+    .empty-icon {
+        font-size: 80px;
+        margin-bottom: 20px;
+        opacity: 0.3;
+    }
+    
+    .empty-state h2 {
+        color: #999;
+        margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+        color: #666;
+    }
+    
+    /* Toast Notification */
+    .toast-notification {
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        z-index: 10000;
+        animation: slideInRight 0.3s ease;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .toast-notification.error {
+        background: #dc3545;
+    }
+    
+    .toast-notification.hide {
+        animation: slideOutRight 0.3s ease;
+    }
+    
+    @keyframes slideInRight {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+    
+    /* Smooth reorder animation */
+    .message-card.moving {
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    
+    .message-card.fade-update {
+        animation: fadeUpdate 0.4s ease;
+    }
+    
+    @keyframes fadeUpdate {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; transform: scale(0.98); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+</style>
+
+<script>
+    console.log('Script started loading');
+    
+    // Get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    const csrftoken = getCookie('csrftoken');
+    console.log('CSRF token:', csrftoken ? 'Found' : 'Not found');
+    
+    // Helper function to get current filter status
+    function currentFilterStatus() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('status') || 'pending';
+    }
+    
+    // Initialize buttons based on active tab
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOMContentLoaded fired');
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentFilter = urlParams.get('status') || 'pending';
+        console.log('Current filter:', currentFilter);
+        console.log('Current filter:', currentFilter);
+        
+        const btnMarkAllReviewed = document.getElementById('btn-mark-all-reviewed');
+        const btnDeleteAll = document.getElementById('btn-delete-all');
+        
+        console.log('Mark All button:', btnMarkAllReviewed);
+        console.log('Mark All button display:', btnMarkAllReviewed ? btnMarkAllReviewed.style.display : 'NULL');
+        console.log('Delete All button:', btnDeleteAll);
+        console.log('Delete All button display:', btnDeleteAll ? btnDeleteAll.style.display : 'NULL');
+        
+        if (!btnMarkAllReviewed || !btnDeleteAll) {
+            console.error('Buttons not found!');
+            return;
+        }
+        
+        // Show/hide buttons based on active tab
+        if (currentFilter === 'pending') {
+            btnMarkAllReviewed.style.display = 'block';
+            btnDeleteAll.style.display = 'block';
+            btnDeleteAll.innerHTML = '🗑️ Delete All Pending';
+        } else if (currentFilter === 'reviewed') {
+            btnMarkAllReviewed.style.display = 'none';
+            btnDeleteAll.style.display = 'block';
+            btnDeleteAll.innerHTML = '🗑️ Delete All Reviewed';
+        }
+        
+        console.log('Buttons configured, adding event listeners');
+        
+        // Add click event listeners
+        btnMarkAllReviewed.addEventListener('click', function(e) {
+            console.log('Mark All button clicked');
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Disable button and show loading
+            this.disabled = true;
+            this.style.opacity = '0.6';
+            this.innerHTML = '⏳ Processing...';
+            
+            markAllAsReviewed(currentFilter);
+        });
+        
+        btnDeleteAll.addEventListener('click', function(e) {
+            console.log('Delete All button clicked');
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Disable button and show loading
+            this.disabled = true;
+            this.style.opacity = '0.6';
+            const originalText = this.innerHTML;
+            this.innerHTML = '⏳ Deleting...';
+            
+            deleteAllMessages(currentFilter);
+        });
+        
+        console.log('Event listeners added');
+        
+        // Visual confirmation that JS loaded
+        const actionButtons = document.getElementById('action-buttons');
+        if (actionButtons) {
+            actionButtons.style.border = '2px solid green';
+            console.log('✓ Visual debug border added to action-buttons');
+        }
+        
+        // Intercept all toggle review form submissions
+        document.querySelectorAll('form[action*="toggle"]').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const button = form.querySelector('button[type="submit"]');
+                const card = form.closest('.message-card');
+                const messageId = card.dataset.messageId;
+                const isReviewed = button.classList.contains('btn-mark-pending');
+                
+                console.log('Form submit intercepted - ID:', messageId, 'isReviewed:', isReviewed);
+                toggleReview(messageId, isReviewed);
+            });
+        });
+    });
+    
+    // Show toast notification
+    function showToast(message, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification' + (isError ? ' error' : '');
+        toast.innerHTML = `
+            <span>${isError ? '✗' : '✓'}</span>
+            <span>${message}</span>
+        `;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('hide');
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 300);
+        }, 3000);
+    }
+    
+    // Wrapper function to call toggleReview from button click
+    function toggleReviewFromButton(button) {
+        const messageId = parseInt(button.dataset.messageId);
+        const isReviewed = button.dataset.isReviewed === 'true';
+        console.log('Button clicked - Message ID:', messageId, 'Is Reviewed:', isReviewed);
+        toggleReview(messageId, isReviewed);
+    }
+    
+    // Toggle review status
+    async function toggleReview(messageId, isReviewed) {
+        const card = document.querySelector(`[data-message-id="${messageId}"]`);
+        const button = card.querySelector('.btn-toggle-review');
+        
+        // Disable button during request
+        button.disabled = true;
+        button.style.opacity = '0.6';
+        
+        console.log(`Toggling message ${messageId}, currently reviewed: ${isReviewed}`);
+        
+        try {
+            const response = await fetch(`/customadmin/support/${messageId}/toggle/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ next: window.location.pathname })
+            });
+            
+            console.log('Response status:', response.status);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Error response:', errorText);
+                throw new Error('Failed to update status');
+            }
+            
+            const data = await response.json();
+            console.log('Response data:', data);
+            
+            // Update the card UI
+            updateCardUI(card, !isReviewed, data.reviewed_by, data.reviewed_at);
+            
+            // Show success message
+            showToast(isReviewed ? 'Message marked as pending' : 'Message marked as reviewed');
+            
+            // Reorder cards smoothly
+            setTimeout(() => {
+                reorderCards();
+                updateBadges();
+            }, 400);
+            
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('Failed to update message status', true);
+            button.disabled = false;
+            button.style.opacity = '1';
+        }
+    }
+    
+    // Update card UI
+    function updateCardUI(card, isReviewed, reviewedBy, reviewedAt) {
+        // Add fade animation
+        card.classList.add('fade-update');
+        
+        setTimeout(() => {
+            // Update status class
+            card.classList.remove('pending', 'reviewed');
+            card.classList.add(isReviewed ? 'reviewed' : 'pending');
+            
+            // Update status icon
+            const statusIcon = card.querySelector('.status-icon');
+            statusIcon.className = 'status-icon ' + (isReviewed ? 'reviewed' : 'pending');
+            statusIcon.textContent = isReviewed ? '✓' : '●';
+            statusIcon.title = isReviewed ? 'Reviewed' : 'Pending';
+            
+            // Update button
+            const button = card.querySelector('.btn-toggle-review');
+            button.className = 'btn-toggle-review ' + (isReviewed ? 'btn-mark-pending' : 'btn-mark-reviewed');
+            button.textContent = isReviewed ? 'Mark as Pending' : '✓ Mark as Reviewed';
+            button.dataset.isReviewed = isReviewed;
+            button.onclick = () => toggleReview(button.dataset.messageId, isReviewed);
+            button.disabled = false;
+            button.style.opacity = '1';
+            
+            // Update/add review footer
+            let footer = card.querySelector('.message-footer');
+            if (isReviewed) {
+                if (!footer) {
+                    footer = document.createElement('div');
+                    footer.className = 'message-footer';
+                    card.appendChild(footer);
+                }
+                footer.innerHTML = `
+                    <small>
+                        Reviewed by <strong>${reviewedBy}</strong>
+                        on ${reviewedAt}
+                    </small>
+                `;
+            } else {
+                if (footer) {
+                    footer.remove();
+                }
+            }
+            
+            card.classList.remove('fade-update');
+        }, 200);
+    }
+    
+    // Reorder cards
+    function reorderCards() {
+        const container = document.querySelector('.messages-container');
+        const cards = Array.from(container.querySelectorAll('.message-card'));
+        
+        // Get current filter from URL or active tab
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentFilter = urlParams.get('status') || 'pending';
+        
+        // Filter and hide/show cards based on current filter
+        cards.forEach(card => {
+            const isReviewed = card.classList.contains('reviewed');
+            
+            if (currentFilter === 'pending' && isReviewed) {
+                // Fade out and remove from pending view
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '0';
+                card.style.transform = 'translateX(100px)';
+                setTimeout(() => {
+                    card.style.display = 'none';
+                }, 300);
+            } else if (currentFilter === 'reviewed' && !isReviewed) {
+                // Fade out and remove from reviewed view
+                card.style.transition = 'all 0.3s ease';
+                card.style.opacity = '0';
+                card.style.transform = 'translateX(100px)';
+                setTimeout(() => {
+                    card.style.display = 'none';
+                }, 300);
+            } else {
+                // Show card if it matches filter
+                card.style.display = '';
+                card.style.opacity = '1';
+                card.style.transform = 'translateX(0)';
+            }
+        });
+        
+        // Sort remaining visible cards: pending first, then reviewed
+        const visibleCards = cards.filter(card => {
+            const isReviewed = card.classList.contains('reviewed');
+            if (currentFilter === 'pending') return !isReviewed;
+            if (currentFilter === 'reviewed') return isReviewed;
+            return true;
+        });
+        
+        visibleCards.sort((a, b) => {
+            const aReviewed = a.classList.contains('reviewed');
+            const bReviewed = b.classList.contains('reviewed');
+            
+            if (aReviewed === bReviewed) return 0;
+            return aReviewed ? 1 : -1;
+        });
+        
+        // Add moving class for smooth animation
+        visibleCards.forEach(card => card.classList.add('moving'));
+        
+        // Reorder visible cards in DOM
+        visibleCards.forEach(card => container.appendChild(card));
+        
+        // Remove moving class after animation
+        setTimeout(() => {
+            visibleCards.forEach(card => card.classList.remove('moving'));
+        }, 500);
+        
+        // Check if no cards are visible
+        setTimeout(() => {
+            const visibleCount = Array.from(container.querySelectorAll('.message-card'))
+                .filter(card => card.style.display !== 'none').length;
+            
+            // Show empty state if no messages
+            let emptyState = container.querySelector('.empty-state');
+            if (visibleCount === 0) {
+                if (!emptyState) {
+                    emptyState = document.createElement('div');
+                    emptyState.className = 'empty-state';
+                    let emptyMessage = 'No support messages have been submitted yet.';
+                    if (currentFilter === 'pending') {
+                        emptyMessage = 'There are no pending support messages at the moment.';
+                    } else if (currentFilter === 'reviewed') {
+                        emptyMessage = 'There are no reviewed messages yet.';
+                    }
+                    emptyState.innerHTML = `
+                        <div class="empty-icon">💬</div>
+                        <h2>No Messages Found</h2>
+                        <p>${emptyMessage}</p>
+                    `;
+                    container.appendChild(emptyState);
+                }
+                emptyState.style.display = 'block';
+            } else {
+                if (emptyState) {
+                    emptyState.style.display = 'none';
+                }
+            }
+        }, 350);
+    }
+    
+    // Update filter badges
+    function updateBadges() {
+        const pendingCount = document.querySelectorAll('.message-card.pending').length;
+        const reviewedCount = document.querySelectorAll('.message-card.reviewed').length;
+        
+        // Update badge counts (now only 2 tabs: pending and reviewed)
+        const badges = document.querySelectorAll('.filter-tab .badge');
+        if (badges.length >= 2) {
+            badges[0].textContent = pendingCount;  // Pending
+            badges[1].textContent = reviewedCount;  // Reviewed
+        }
+    }
+    
+    // Delete single message (called directly from button)
+    async function deleteMessage(messageId) {
+        const card = document.querySelector(`[data-message-id="${messageId}"]`);
+        const button = card.querySelector('button[onclick*="deleteMessage"]');
+        
+        console.log('deleteMessage called - ID:', messageId);
+        
+        // Disable button during request
+        if (button) {
+            button.disabled = true;
+            button.style.opacity = '0.6';
+        }
+        
+        try {
+            const response = await fetch(`/customadmin/support/${messageId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            console.log('Delete response status:', response.status);
+            
+            if (!response.ok) {
+                throw new Error('Failed to delete message');
+            }
+            
+            const data = await response.json();
+            console.log('Delete response data:', data);
+            
+            if (data.success) {
+                showToast(data.message);
+                
+                // Add fade animation and remove card
+                card.classList.add('fade-update');
+                setTimeout(() => {
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateX(100px)';
+                    
+                    setTimeout(() => {
+                        card.remove();
+                        
+                        // Update badges and check for empty state
+                        updateBadges();
+                        
+                        setTimeout(() => {
+                            const remainingCards = document.querySelectorAll('.message-card').length;
+                            if (remainingCards === 0) {
+                                showEmptyState();
+                            }
+                        }, 100);
+                    }, 300);
+                }, 200);
+            } else {
+                showToast('Failed to delete message', true);
+                if (button) {
+                    button.disabled = false;
+                    button.style.opacity = '1';
+                }
+            }
+        } catch (error) {
+            console.error('Delete error:', error);
+            showToast('An error occurred while deleting the message', true);
+            if (button) {
+                button.disabled = false;
+                button.style.opacity = '1';
+            }
+        }
+    }
+    
+    // Delete all messages (called directly from button)
+    async function deleteAllMessages(filter) {
+        console.log('deleteAllMessages called - filter:', filter);
+        
+        const btnDeleteAll = document.getElementById('btn-delete-all');
+        
+        try {
+            const response = await fetch('/customadmin/support/delete-all/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ filter: filter })
+            });
+            
+            console.log('Delete all response status:', response.status);
+            console.log('Delete all response headers:', response.headers);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Delete all error response:', errorText);
+                throw new Error(`Failed to delete messages: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Delete all response data:', data);
+            
+            if (data.success) {
+                showToast(data.message);
+                
+                // Get all cards matching the filter
+                const cardsToDelete = filter === 'pending' 
+                    ? Array.from(document.querySelectorAll('.message-card.pending'))
+                    : Array.from(document.querySelectorAll('.message-card.reviewed'));
+                
+                console.log('Cards to delete:', cardsToDelete.length);
+                
+                if (cardsToDelete.length === 0) {
+                    // Re-enable button
+                    if (btnDeleteAll) {
+                        btnDeleteAll.disabled = false;
+                        btnDeleteAll.style.opacity = '1';
+                        btnDeleteAll.innerHTML = filter === 'pending' ? '🗑️ Delete All Pending' : '🗑️ Delete All Reviewed';
+                    }
+                    return;
+                }
+                
+                // Animate and remove all cards with stagger
+                cardsToDelete.forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('fade-update');
+                        setTimeout(() => {
+                            card.style.transition = 'all 0.3s ease';
+                            card.style.opacity = '0';
+                            card.style.transform = 'translateX(100px)';
+                            
+                            setTimeout(() => {
+                                card.remove();
+                                
+                                // After last card, update badges and check empty state
+                                if (index === cardsToDelete.length - 1) {
+                                    updateBadges();
+                                    
+                                    // Re-enable button
+                                    if (btnDeleteAll) {
+                                        btnDeleteAll.disabled = false;
+                                        btnDeleteAll.style.opacity = '1';
+                                        btnDeleteAll.innerHTML = filter === 'pending' ? '🗑️ Delete All Pending' : '🗑️ Delete All Reviewed';
+                                    }
+                                    
+                                    setTimeout(() => {
+                                        const remainingCards = document.querySelectorAll('.message-card').length;
+                                        if (remainingCards === 0) {
+                                            showEmptyState();
+                                        }
+                                    }, 100);
+                                }
+                            }, 300);
+                        }, 200);
+                    }, index * 80); // Stagger animations
+                });
+            } else {
+                showToast('Failed to delete messages', true);
+                // Re-enable button
+                if (btnDeleteAll) {
+                    btnDeleteAll.disabled = false;
+                    btnDeleteAll.style.opacity = '1';
+                    btnDeleteAll.innerHTML = filter === 'pending' ? '🗑️ Delete All Pending' : '🗑️ Delete All Reviewed';
+                }
+            }
+        } catch (error) {
+            console.error('Delete all error:', error);
+            showToast('An error occurred while deleting messages: ' + error.message, true);
+            // Re-enable button
+            if (btnDeleteAll) {
+                btnDeleteAll.disabled = false;
+                btnDeleteAll.style.opacity = '1';
+                btnDeleteAll.innerHTML = filter === 'pending' ? '🗑️ Delete All Pending' : '🗑️ Delete All Reviewed';
+            }
+        }
+    }
+    
+    // Mark all as reviewed (called directly from button)
+    async function markAllAsReviewed(filter) {
+        console.log('markAllAsReviewed called - filter:', filter);
+        
+        const btnMarkAll = document.getElementById('btn-mark-all-reviewed');
+        
+        try {
+            const response = await fetch('/customadmin/support/mark-all-reviewed/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ filter: filter })
+            });
+            
+            console.log('Mark all response status:', response.status);
+            console.log('Mark all response headers:', response.headers);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Mark all error response:', errorText);
+                throw new Error(`Failed to mark messages as reviewed: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('Mark all response data:', data);
+            
+            if (data.success) {
+                showToast(data.message);
+                
+                // Get all pending cards
+                const pendingCards = Array.from(document.querySelectorAll('.message-card.pending'));
+                
+                console.log('Pending cards to update:', pendingCards.length);
+                
+                if (pendingCards.length === 0) {
+                    // Re-enable button
+                    if (btnMarkAll) {
+                        btnMarkAll.disabled = false;
+                        btnMarkAll.style.opacity = '1';
+                        btnMarkAll.innerHTML = '✓ Mark All as Reviewed';
+                    }
+                    return;
+                }
+                
+                // Update each card using the same updateCardUI function as individual toggle
+                pendingCards.forEach((card, index) => {
+                    setTimeout(() => {
+                        updateCardUI(card, true, data.reviewed_by, data.reviewed_at);
+                    }, index * 80); // Stagger updates
+                });
+                
+                // After all cards are updated, reorder and update badges (like individual toggle does)
+                setTimeout(() => {
+                    reorderCards();
+                    updateBadges();
+                    
+                    // Re-enable button
+                    if (btnMarkAll) {
+                        btnMarkAll.disabled = false;
+                        btnMarkAll.style.opacity = '1';
+                        btnMarkAll.innerHTML = '✓ Mark All as Reviewed';
+                    }
+                }, (pendingCards.length * 80) + 400);
+            } else {
+                showToast('Failed to mark messages as reviewed', true);
+                // Re-enable button
+                if (btnMarkAll) {
+                    btnMarkAll.disabled = false;
+                    btnMarkAll.style.opacity = '1';
+                    btnMarkAll.innerHTML = '✓ Mark All as Reviewed';
+                }
+            }
+        } catch (error) {
+            console.error('Mark all error:', error);
+            showToast('An error occurred while marking messages as reviewed: ' + error.message, true);
+            // Re-enable button
+            if (btnMarkAll) {
+                btnMarkAll.disabled = false;
+                btnMarkAll.style.opacity = '1';
+                btnMarkAll.innerHTML = '✓ Mark All as Reviewed';
+            }
+        }
+    }
+    
+    // Helper function to show empty state
+    function showEmptyState() {
+        const container = document.querySelector('.messages-container');
+        const currentFilter = new URLSearchParams(window.location.search).get('status') || 'pending';
+        
+        let emptyMessage = 'No support messages have been submitted yet.';
+        if (currentFilter === 'pending') {
+            emptyMessage = 'There are no pending support messages at the moment.';
+        } else if (currentFilter === 'reviewed') {
+            emptyMessage = 'There are no reviewed messages yet.';
+        }
+        
+        const emptyState = document.createElement('div');
+        emptyState.className = 'empty-state';
+        emptyState.innerHTML = `
+            <div class="empty-icon">💬</div>
+            <h2>No Messages Found</h2>
+            <p>${emptyMessage}</p>
+        `;
+        container.appendChild(emptyState);
+    }
+
+</script>
+{% endblock %}
+

@@ -1,0 +1,3 @@
+mail._domainkey	IN	TXT	( "v=DKIM1; h=sha256; k=rsa; "
+	  "p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2Hov01QwSy5cF2IdQ2PGIJY5EdLI7u+CUuDy9V68eudEbkT++1LiJogRQhQIENua2jRK8qIDldnrgKfplazKiQi2ZUFxEaux/sWEyuwwUUUoO6epnjGQxlfklGZ7Rkjx3hstefncvTammSlIT7Su7YA24d1w0yAAzAAmWDn7MF2NzSQCyX5144y2pqIoUT0Qq3ip6zQz3XKY9x"
+	  "bMKf1wloeYkrg7xcHUxJolWy1zwZVJ0Kv8ukTCWXMW+VtI26q3PIQQN+1neNV3sjqNqvSph7PoO6rjNCbovBuYIFVctI2xH3ovf6ORRdhhaADcKSEeXeBxTJxeyVIdUq+hYKOCjwIDAQAB" )  ; ----- DKIM key mail for games.agames.cv

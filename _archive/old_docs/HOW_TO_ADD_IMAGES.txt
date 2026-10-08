@@ -1,0 +1,262 @@
+================================================================================
+HOW TO ADD TEAM IMAGES AND COMPANY LOGO
+================================================================================
+
+Your landing page is ready! Here's how to add images:
+
+================================================================================
+DIRECTORY STRUCTURE
+================================================================================
+
+Create these folders in your Django static directory:
+
+/root/game/pages/static/images/
+  ├── softaware-logo.png          (Company logo)
+  └── team/
+      ├── ramy-rashad.jpg         (Ramy's photo)
+      ├── ahmed-elgendy.jpg       (Ahmed's photo)
+      └── youssef-khaled.jpg      (Youssef's photo)
+
+
+================================================================================
+STEP 1: CREATE THE DIRECTORIES
+================================================================================
+
+Run these commands:
+
+cd /root/game
+mkdir -p pages/static/images/team
+
+
+================================================================================
+STEP 2: UPLOAD YOUR IMAGES
+================================================================================
+
+Option A: Using SCP from your local machine
+--------------------------------------------
+
+# From your local machine (where you have the images):
+scp softaware-logo.png root@152.53.206.21:/root/game/pages/static/images/
+scp ramy-rashad.jpg root@152.53.206.21:/root/game/pages/static/images/team/
+scp ahmed-elgendy.jpg root@152.53.206.21:/root/game/pages/static/images/team/
+scp youssef-khaled.jpg root@152.53.206.21:/root/game/pages/static/images/team/
+
+
+Option B: Using FileZilla or WinSCP (GUI)
+------------------------------------------
+
+1. Connect to: 152.53.206.21
+2. Navigate to: /root/game/pages/static/images/
+3. Drag and drop:
+   - softaware-logo.png to /root/game/pages/static/images/
+   - Team photos to /root/game/pages/static/images/team/
+
+
+Option C: Using wget (if images are online)
+--------------------------------------------
+
+cd /root/game/pages/static/images/
+wget https://yoursite.com/path/to/softaware-logo.png
+
+cd team/
+wget https://yoursite.com/path/to/ramy-rashad.jpg
+wget https://yoursite.com/path/to/ahmed-elgendy.jpg
+wget https://yoursite.com/path/to/youssef-khaled.jpg
+
+
+================================================================================
+STEP 3: UPDATE THE LANDING PAGE TO USE IMAGES
+================================================================================
+
+After uploading images, the landing page HTML already has placeholders.
+Just uncomment the image tags:
+
+In /root/game/pages/templates/pages/landing.html:
+
+1. For company logo (line ~83):
+   Replace:
+     🎮
+   With:
+     <img src="{% static 'images/softaware-logo.png' %}" alt="Softaware Logo">
+
+2. For Ramy's photo (line ~265):
+   Replace:
+     👨‍💻
+   With:
+     <img src="{% static 'images/team/ramy-rashad.jpg' %}" alt="Ramy Rashad">
+
+3. For Ahmed's photo (line ~289):
+   Replace:
+     👨‍💻
+   With:
+     <img src="{% static 'images/team/ahmed-elgendy.jpg' %}" alt="Ahmed El Gendy">
+
+4. For Youssef's photo (line ~313):
+   Replace:
+     👨‍💻
+   With:
+     <img src="{% static 'images/team/youssef-khaled.jpg' %}" alt="Youssef Khaled">
+
+
+================================================================================
+STEP 4: COLLECT STATIC FILES
+================================================================================
+
+After adding images, run:
+
+cd /root/game
+source venv/bin/activate
+python manage.py collectstatic --noinput
+
+
+================================================================================
+IMAGE REQUIREMENTS
+================================================================================
+
+Company Logo:
+  - Format: PNG with transparent background (preferred) or JPG
+  - Size: 500x500 pixels (square)
+  - File size: < 500 KB
+  - Name: softaware-logo.png
+
+Team Photos:
+  - Format: JPG or PNG
+  - Size: 600x600 pixels (square, will be displayed as circle)
+  - File size: < 300 KB each
+  - Names: 
+    * ramy-rashad.jpg
+    * ahmed-elgendy.jpg
+    * youssef-khaled.jpg
+
+Tips:
+  - Use professional headshots or professional photos
+  - Ensure good lighting and clear faces
+  - Square crop works best (will be displayed in circles)
+  - Compress images to reduce loading time
+
+
+================================================================================
+STEP 5: VERIFY THE LANDING PAGE
+================================================================================
+
+1. Visit: https://games.agames.cv/
+2. Check that all images load correctly
+3. Test responsiveness (mobile, tablet, desktop)
+4. Verify all links work (LinkedIn, WhatsApp, Email)
+
+
+================================================================================
+CURRENT STATUS
+================================================================================
+
+✅ Landing page created with:
+   - Company header with logo placeholder
+   - Hero section with call-to-action buttons
+   - About section with 6 feature cards
+   - Team section with 3 team member cards
+   - Footer with contact information
+   - Fully responsive design
+   - Purple gradient theme matching your brand
+
+⏳ TODO:
+   - Upload company logo (softaware-logo.png)
+   - Upload team photos (ramy-rashad.jpg, ahmed-elgendy.jpg, youssef-khaled.jpg)
+   - Uncomment image tags in landing.html
+   - Run collectstatic
+
+
+================================================================================
+QUICK COMMANDS
+================================================================================
+
+# Create image directories
+mkdir -p /root/game/pages/static/images/team
+
+# Collect static files after adding images
+cd /root/game && source venv/bin/activate && python manage.py collectstatic --noinput
+
+# Restart services if needed
+sudo systemctl restart gunicorn
+sudo systemctl reload nginx
+
+# View landing page
+https://games.agames.cv/
+
+
+================================================================================
+CURRENT LANDING PAGE FEATURES
+================================================================================
+
+Header:
+  - Softaware company name and logo
+  - Navigation links (Admin Dashboard, API)
+  - Purple gradient background
+
+Hero Section:
+  - Welcome message
+  - Platform description
+  - Two CTA buttons (Explore API, Meet Our Team)
+
+About Section:
+  - 6 feature cards describing the platform:
+    * Android Games Library
+    * Secure Authentication
+    * Flexible Subscriptions
+    * Personalized Experience
+    * Support System
+    * High Performance
+
+Team Section:
+  - 3 team member cards with:
+    * Profile photo (placeholder emojis for now)
+    * Name and role
+    * Description
+    * Email address (clickable)
+    * WhatsApp number (clickable)
+    * LinkedIn link
+    * WhatsApp link
+  
+  Team Members:
+    1. Ramy Rashad - Full Stack Developer
+    2. Ahmed El Gendy - Backend Developer
+    3. Youssef Khaled - Mobile Integration Specialist
+
+Footer:
+  - Company information
+  - Quick links
+  - Technology stack
+  - Contact details
+  - Copyright notice
+
+Design:
+  - Modern gradient design (purple theme)
+  - Fully responsive (mobile, tablet, desktop)
+  - Smooth hover animations
+  - Professional card-based layout
+  - Optimized for performance
+
+
+================================================================================
+ALTERNATIVE: IF YOU DON'T HAVE IMAGES YET
+================================================================================
+
+The landing page currently uses emoji placeholders:
+  - 🎮 for company logo
+  - 👨‍💻 for team member photos
+
+These look professional and work perfectly while you prepare your images.
+You can launch the site now and add images later!
+
+
+================================================================================
+ACCESS THE LANDING PAGE
+================================================================================
+
+URL: https://games.agames.cv/
+
+The page is LIVE now! Visit it to see your team and company information.
+
+Admin Dashboard: https://games.agames.cv/customadmin/
+API Documentation: https://games.agames.cv/api/
+
+================================================================================

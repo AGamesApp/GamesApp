@@ -1,0 +1,709 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGameS.cv - Your Ultimate Gaming Platform</title>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/android-chrome-192x192.png' %}">
+    <link rel="manifest" href="{% static 'images/site.webmanifest' %}">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #e5e7eb;
+            background: #0f172a;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .company-logo {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            padding: 10px;
+        }
+
+        .company-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .company-info h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .company-info p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+            color: white;
+            padding: 4rem 20px;
+            text-align: center;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .hero h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            opacity: 0.95;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        /* About Section */
+        .about {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #3b82f6;
+            text-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 3rem;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 3rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            text-align: center;
+            border: 1px solid #475569;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: #3b82f6;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-card p {
+            color: #cbd5e1;
+        }
+
+        /* Team Section */
+        .team {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 4rem 20px;
+        }
+
+        .team-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 3rem;
+        }
+
+        .team-card {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid #475569;
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+            border-color: #3b82f6;
+        }
+
+        .team-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5);
+            overflow: hidden;
+            border: 3px solid #1e293b;
+        }
+
+        .team-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        .team-card h3 {
+            color: #3b82f6;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-card .role {
+            color: #60a5fa;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .team-card p {
+            color: #cbd5e1;
+        }
+
+        .contact-info {
+            margin-top: 1.5rem;
+            text-align: left;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0.8rem;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .contact-item a {
+            color: #60a5fa;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .contact-item a:hover {
+            color: #3b82f6;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 1.5rem;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+        }
+
+        .social-link:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Footer */
+        footer {
+            background: #0f172a;
+            color: white;
+            padding: 3rem 20px 1rem;
+            border-top: 2px solid #3b82f6;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: #3b82f6;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section p,
+        .footer-section a {
+            color: #cbd5e0;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid #4a5568;
+            color: #cbd5e0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .company-info h1 {
+                font-size: 2rem;
+            }
+
+            .hero h2 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .nav-links {
+                justify-content: center;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        /* Image Upload Instructions */
+        .image-placeholder {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #06b6d4 100%);
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4rem;
+            margin: 0 auto;
+        }
+
+        /* Hover effects for links */
+        .company-info a:hover h1 {
+            color: #3b82f6;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover > div {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5) !important;
+            border-color: #60a5fa !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="company-logo">
+                    <img src="{% static 'images/agames.jpg' %}" alt="AGames Logo">
+                </div>
+                <div class="company-info">
+                    <h1>AGames</h1>
+                    <p>Your Ultimate Gaming Platform</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h2>🎮 Welcome to AGameS.cv</h2>
+        <p>Your ultimate gaming platform for downloading, discovering, and enjoying the best Android games. Built with cutting-edge technology and passion for gaming.</p>
+        <div class="cta-buttons">
+            <a href="https://play.google.com/store/apps/details?id=com.agames.play" target="_blank" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 10px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+                </svg>
+                Download on Google Play
+            </a>
+            <a href="#about" class="btn btn-secondary">Learn More</a>
+            <a href="#team" class="btn btn-secondary">Meet Our Team</a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <h2 class="section-title">About AGameS.cv</h2>
+        <p class="section-subtitle">A comprehensive gaming platform designed for Android game enthusiasts</p>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3>Android Games Library</h3>
+                <p>Access thousands of Android games with detailed information, screenshots, and reviews. Easy download management and automatic updates.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h3>Secure Authentication</h3>
+                <p>Advanced OAuth 2.0 with Google Sign-In, email verification with OTP, secure password reset, and Firebase Cloud Messaging integration.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💳</div>
+                <h3>Flexible Subscriptions</h3>
+                <p>Multiple subscription tiers with Paymob payment integration, automatic renewal management, and exclusive premium content access.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Personalized Experience</h3>
+                <p>Smart game recommendations, favorites and wishlist management, download history tracking, and personalized notifications.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Support System</h3>
+                <p>Comprehensive ticket-based support, real-time notifications, priority support for premium users, and detailed FAQ section.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>High Performance</h3>
+                <p>Built with Django REST Framework, PostgreSQL database, Redis caching, optimized API endpoints, and HTTPS security.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team" id="team">
+        <h2 class="section-title">Meet Our Team</h2>
+        <p class="section-subtitle">The talented team behind AGameS.cv</p>
+
+        <div class="team-grid">
+            <!-- Team Member 1: Ramy Rashad -->
+            <div class="team-card">
+                <div class="team-image">
+                    <img src="{% static 'images/team/ramy-rashad.png' %}" alt="Ramy Rashad">
+                </div>
+                <h3>Ramy Rashad</h3>
+                <p class="role">Backend Developer</p>
+                <p>Backend specialist focused on Django, REST APIs, database architecture, and server infrastructure.</p>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        📧 <a href="mailto:ramy41599@gmail.com">ramy41599@gmail.com</a>
+                    </div>
+                    <div class="contact-item">
+                        📱 <a href="https://wa.me/201062667099">+20 106 266 7099</a>
+                    </div>
+                </div>
+
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/ramy-rashad-952012281/" target="_blank" class="social-link" title="LinkedIn">
+                        💼
+                    </a>
+                    <a href="https://wa.me/201062667099" target="_blank" class="social-link" title="WhatsApp">
+                        💬
+                    </a>
+                </div>
+            </div>
+
+            <!-- Team Member 2: Ahmed El Gendy -->
+            <div class="team-card">
+                <div class="team-image">
+                    <img src="{% static 'images/team/ahmed-elgendy-new.jpeg' %}" alt="Ahmed El Gendy">
+                </div>
+                <h3>Ahmed El Gendy</h3>
+                <p class="role">Mobile App Developer</p>
+                <p>Mobile application specialist focused on Android development, Flutter, and mobile UI/UX design.</p>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        📧 <a href="mailto:ahmed.abdulkader.elgendy@gmail.com">ahmed.abdulkader.elgendy@gmail.com</a>
+                    </div>
+                    <div class="contact-item">
+                        📱 <a href="https://wa.me/201212252985">+20 121 225 2985</a>
+                    </div>
+                </div>
+
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/ahmed-elgendy56/" target="_blank" class="social-link" title="LinkedIn">
+                        💼
+                    </a>
+                    <a href="https://wa.me/201212252985" target="_blank" class="social-link" title="WhatsApp">
+                        💬
+                    </a>
+                </div>
+            </div>
+
+            <!-- Team Member 3: Youssef Khaled -->
+            <div class="team-card">
+                <div class="team-image">
+                    <img src="{% static 'images/team/youssef-khaled.jpeg' %}" alt="Youssef Khaled">
+                </div>
+                <h3>Youssef Khaled</h3>
+                <p class="role">Web Scraping Specialist</p>
+                <p>Web scraping specialist extracting download links for games and emulators to keep the platform updated with latest content.</p>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        📧 <a href="mailto:eng.youssef.khaled.26@gmail.com">eng.youssef.khaled.26@gmail.com</a>
+                    </div>
+                    <div class="contact-item">
+                        📱 <a href="https://wa.me/201141619933">+20 114 161 9933</a>
+                    </div>
+                </div>
+
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/youssef-khaled-eid/" target="_blank" class="social-link" title="LinkedIn">
+                        💼
+                    </a>
+                    <a href="https://wa.me/201141619933" target="_blank" class="social-link" title="WhatsApp">
+                        💬
+                    </a>
+                </div>
+            </div>
+
+            <!-- Team Member 4: Marwan Farouk -->
+            <div class="team-card">
+                <div class="team-image">
+                    <img src="{% static 'images/team/marwan-farouk.jpeg' %}" alt="Marwan Farouk">
+                </div>
+                <h3>Marwan Farouk</h3>
+                <p class="role">UI/UX Designer</p>
+                <p>User interface and experience designer focused on creating intuitive, beautiful designs and seamless user interactions.</p>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        📧 <a href="mailto:marwan.business2020@gmail.com">marwan.business2020@gmail.com</a>
+                    </div>
+                    <div class="contact-item">
+                        📱 <a href="https://wa.me/201286886732">+20 128 688 6732</a>
+                    </div>
+                </div>
+
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/marwan-farouk-b40465307/" target="_blank" class="social-link" title="LinkedIn">
+                        💼
+                    </a>
+                    <a href="https://wa.me/201286886732" target="_blank" class="social-link" title="WhatsApp">
+                        💬
+                    </a>
+                </div>
+            </div>
+
+            <!-- Team Member 5: Mina Hakim -->
+            <div class="team-card">
+                <div class="team-image">
+                    <img src="{% static 'images/team/mina-hakim.jpeg' %}" alt="Mina Hakim">
+                </div>
+                <h3>Mina Hakim</h3>
+                <p class="role">UI/UX Designer</p>
+                <p>User interface and experience designer creating intuitive and visually appealing designs for exceptional user experiences.</p>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        📧 <a href="mailto:minahakim1476@gmail.com">minahakim1476@gmail.com</a>
+                    </div>
+                    <div class="contact-item">
+                        📱 <a href="https://wa.me/201280632161">012 80632161</a>
+                    </div>
+                </div>
+
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/mina-hakim-nassim?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" class="social-link" title="LinkedIn">
+                        💼
+                    </a>
+                    <a href="https://wa.me/201280632161" target="_blank" class="social-link" title="WhatsApp">
+                        💬
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>softAware</h3>
+                <p>Your ultimate Android gaming platform for discovering, downloading, and enjoying the best mobile games.</p>
+                <p>© 2025 softAware. All rights reserved.</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#about">About Platform</a>
+                <a href="#team">Our Team</a>
+                <a href="mailto:softaware.devs@gmail.com">Contact Us</a>
+                <a href="https://wa.me/201212252985">WhatsApp Support</a>
+            </div>
+
+            <div class="footer-section">
+                <h3>Technology Stack</h3>
+                <p>Django REST Framework</p>
+                <p>PostgreSQL Database</p>
+                <p>Redis Caching</p>
+                <p>Postfix Mail Server</p>
+                <p>Firebase Cloud Messaging</p>
+                <p>Paymob Payment Gateway</p>
+            </div>
+
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>📧 softaware.devs@gmail.com</p>
+                <p>📱 +20 121 225 2985</p>
+                <p><a href="https://www.facebook.com/profile.php?id=61585627764739" target="_blank" style="color: #3b82f6; text-decoration: none;">📘 Facebook</a></p>
+                <p><a href="https://www.linkedin.com/company/110421993/" target="_blank" style="color: #3b82f6; text-decoration: none;">💼 LinkedIn</a></p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>Built with ❤️ by the AGames Team | Powered by Django & PostgreSQL</p>
+            <a href="https://softaware.me" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+                <div style="margin-top: 25px; padding: 20px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; gap: 12px; border: 1px solid #3b82f6; transition: all 0.3s ease; cursor: pointer;">
+                    <span style="color: #94a3b8; font-size: 16px;">Developed by</span>
+                    <img src="{% static 'images/softaware-profile.png' %}" alt="Soft Aware" style="height: 40px; border-radius: 8px; vertical-align: middle; box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);">
+                    <span style="color: #e5e7eb; font-weight: 600; font-size: 18px;">Soft Aware</span>
+                </div>
+            </a>
+        </div>
+    </footer>
+</body>
+</html>
