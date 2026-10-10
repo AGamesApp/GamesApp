@@ -110,7 +110,7 @@ python manage.py shell
 Then in the shell:
 >>> from django.core.mail import send_mail
 >>> send_mail(
-...     'Test from AGameS.cv',
+...     'Test from games.agames.cv',
 ...     'This is a test email from the local mail server.',
 ...     'noreply@games.agames.cv',
 ...     ['your-email@gmail.com'],  # Replace with your actual email

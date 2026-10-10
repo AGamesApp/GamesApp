@@ -1,22 +1,22 @@
 /* ==================== CSS Variables ==================== */
 :root {
-    /* Colors */
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #818cf8;
-    --secondary: #8b5cf6;
-    --accent: #06b6d4;
+    /* Colors - AGames Pro Neon Red Cyber Theme */
+    --primary: #ff1e42;
+    --primary-dark: #d31027;
+    --primary-light: #ff4766;
+    --secondary: #b70928;
+    --accent: #ff2a4b;
     --success: #10b981;
     --warning: #f59e0b;
     --danger: #ef4444;
     --info: #3b82f6;
     
     /* Neutrals */
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    --surface: #1e293b;
-    --surface-light: #334155;
+    --bg-primary: #0d0d12;
+    --bg-secondary: #16161f;
+    --bg-tertiary: #232330;
+    --surface: #16161f;
+    --surface-light: #232330;
     
     /* Text */
     --text-primary: #f1f5f9;
@@ -24,7 +24,7 @@
     --text-muted: #94a3b8;
     
     /* Borders */
-    --border-color: rgba(255, 255, 255, 0.1);
+    --border-color: rgba(255, 30, 66, 0.15);
     --border-radius: 12px;
     --border-radius-sm: 8px;
     --border-radius-lg: 16px;
@@ -34,7 +34,7 @@
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+    --shadow-glow: 0 0 20px rgba(255, 30, 66, 0.35);
     
     /* Transitions */
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

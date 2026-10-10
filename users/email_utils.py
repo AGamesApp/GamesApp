@@ -27,7 +27,7 @@ def send_verification_email(user, code):
     # Plain text fallback
     plain_message = f'''Hi {user.username},
 
-Welcome to AGames! Your email verification code is:
+Welcome to AGames Pro! Your email verification code is:
 
 {code}
 
@@ -35,15 +35,15 @@ This code will expire in 10 minutes.
 
 If you didn't request this code, please ignore this email.
 
-Thank you for joining AGames!
+Thank you for joining AGames Pro!
 ---
-AGames - Your Ultimate Gaming Platform
+AGames Pro - Your Ultimate Gaming Platform
 GBA • NES • PS2 • PSP • PSX • Wii
-© 2026 AGames. All rights reserved.'''
+© 2026 AGames Pro. All rights reserved.'''
     
     # Send email
     email = EmailMultiAlternatives(
-        subject='Your Verification Code - AGames',
+        subject='Your Verification Code - AGames Pro',
         body=plain_message,
         from_email=settings.DEFAULT_FROM_EMAIL,
         to=[user.email]
@@ -54,7 +54,7 @@ GBA • NES • PS2 • PSP • PSX • Wii
 
 def send_password_reset_email(user, code):
     """
-    Send password reset code email with AGames branding
+    Send password reset code email with AGames Pro branding
     
     Args:
         user: User instance
@@ -72,7 +72,7 @@ def send_password_reset_email(user, code):
     # Plain text fallback
     plain_message = f'''Hi {user.username},
 
-You requested a password reset for your AGames account.
+You requested a password reset for your AGames Pro account.
 
 Your password reset code is:
 
@@ -83,12 +83,12 @@ This code will expire in 10 minutes.
 If you didn't request a password reset, please ignore this email and your password will remain unchanged.
 
 ---
-AGames Security Team
-© 2026 AGames. All rights reserved.'''
+AGames Pro Security Team
+© 2026 AGames Pro. All rights reserved.'''
     
     # Send email
     email = EmailMultiAlternatives(
-        subject='Password Reset Code - AGames',
+        subject='Password Reset Code - AGames Pro',
         body=plain_message,
         from_email=settings.DEFAULT_FROM_EMAIL,
         to=[user.email]

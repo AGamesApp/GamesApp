@@ -1,6 +1,6 @@
 {
-    "name": "AGames - Gaming Platform",
-    "short_name": "AGames",
+    "name": "AGames Pro - Gaming Platform",
+    "short_name": "AGames Pro",
     "icons": [
         {
             "src": "/static/images/android-chrome-192x192.png",
@@ -13,7 +13,7 @@
             "type": "image/png"
         }
     ],
-    "theme_color": "#3b82f6",
-    "background_color": "#0f172a",
+    "theme_color": "#ff1e42",
+    "background_color": "#0d0d12",
     "display": "standalone"
 }

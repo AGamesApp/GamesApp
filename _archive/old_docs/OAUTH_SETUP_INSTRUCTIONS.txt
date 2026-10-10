@@ -1,5 +1,5 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  GOOGLE OAUTH & FIREBASE: ADD AGAMES.CV (COPY-PASTE READY)
+  GOOGLE OAUTH & FIREBASE: ADD games.agames.cv (COPY-PASTE READY)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⚡ QUICK CHECKLIST

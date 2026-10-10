@@ -311,32 +311,34 @@ class GameReviewTests(APITestCase):
     
     def test_add_review(self):
         """Test user can add a review."""
-        url = reverse('games:game-add-review', kwargs={'pk': self.game.pk})
+        url = reverse('games:game-review', kwargs={'pk': self.game.pk})
         response = self.client.post(url, {'review': 'Great game!'})
         
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertIn('Review added successfully', response.data['message'])
+        self.assertEqual(response.data['data']['review'], 'Great game!')
         
         # Verify review was created
         review = GameReview.objects.filter(user=self.user, game=self.game).first()
         self.assertIsNotNone(review)
         self.assertEqual(review.review, 'Great game!')
     
-    def test_add_multiple_reviews(self):
-        """Test user can add multiple reviews."""
-        url = reverse('games:game-add-review', kwargs={'pk': self.game.pk})
+    def test_update_review(self):
+        """Test user updating an existing review (one review per user per game)."""
+        url = reverse('games:game-review', kwargs={'pk': self.game.pk})
         
         self.client.post(url, {'review': 'First review'})
-        self.client.post(url, {'review': 'Second review'})
-        self.client.post(url, {'review': 'Third review'})
+        response = self.client.post(url, {'review': 'Updated review'})
         
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         reviews = GameReview.objects.filter(user=self.user, game=self.game)
-        self.assertEqual(reviews.count(), 3)
+        self.assertEqual(reviews.count(), 1)
+        self.assertEqual(reviews.first().review, 'Updated review')
     
     def test_list_game_reviews(self):
-        """Test listing all reviews for a game."""
+        """Test listing all reviews for a game from multiple users."""
+        user2 = User.objects.create_user(username='user2', email='user2@example.com', password='password123')
         GameReview.objects.create(user=self.user, game=self.game, review='Review 1')
-        GameReview.objects.create(user=self.user, game=self.game, review='Review 2')
+        GameReview.objects.create(user=user2, game=self.game, review='Review 2')
         
         url = reverse('games:game-reviews', kwargs={'pk': self.game.pk})
         response = self.client.get(url)
@@ -631,11 +633,10 @@ class AdvancedSearchTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertGreater(response.data['count'], 0)
     
-    def test_character_subsequence_match(self):
-        """Test character subsequence matching."""
+    def test_word_prefix_match(self):
+        """Test word prefix matching."""
         url = reverse('games:game-list')
-        # "sa" should match "Sonic Adventure" (S...a)
-        response = self.client.get(url, {'search': 'sa'})
+        response = self.client.get(url, {'search': 'Sonic'})
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertGreater(response.data['count'], 0)

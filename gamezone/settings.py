@@ -348,8 +348,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # API Documentation
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'AGames API',
-    'DESCRIPTION': 'Django REST API for AGames mobile app',
+    'TITLE': 'AGames Pro API',
+    'DESCRIPTION': 'Django REST API for AGames Pro mobile app',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
