@@ -209,7 +209,7 @@ class PageForm(forms.ModelForm):
 class AppSettingsForm(forms.ModelForm):
     class Meta:
         model = AppSettings
-        fields = ['app_version', 'app_link', 'under_maintenance', 'show_popup', 'popup_title', 'popup_description', 'popup_link']
+        fields = ['app_version', 'app_link', 'under_maintenance', 'show_popup', 'popup_title', 'popup_description', 'popup_link', 'device_mode_required']
         widgets = {
             'app_version': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -237,6 +237,10 @@ class AppSettingsForm(forms.ModelForm):
             'popup_link': forms.URLInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'https://example.com/update'
+            }),
+            'device_mode_required': forms.CheckboxInput(attrs={
+                'class': 'form-check-input',
+                'id': 'id_device_mode_required',
             }),
         }
         help_texts = {

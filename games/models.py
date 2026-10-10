@@ -271,6 +271,10 @@ class AppSettings(models.Model):
     popup_title = models.CharField(max_length=200, blank=True, default='', help_text='Title for the popup dialog')
     popup_description = models.TextField(blank=True, default='', help_text='Description/message for the popup dialog')
     popup_link = models.CharField(max_length=500, blank=True, default='', help_text='Optional link/URL for popup action')
+    device_mode_required = models.BooleanField(
+        default=False,
+        help_text='Device Token Mode: ON = Required (strict, blocks requests without valid token) | OFF = Passive (observation only, all requests allowed)'
+    )
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -239,20 +239,20 @@ def test_endpoints():
     r = admin_session.get(f"{BASE_URL}/customadmin/users/")
     record("CustomAdmin Users List", r.status_code == 200, f"HTTP {r.status_code}")
 
-    # 4.6 App Settings View
+    # 4.6 App Settings View & Play Integrity UI
     r = admin_session.get(f"{BASE_URL}/customadmin/settings/")
     record("CustomAdmin Settings View", r.status_code == 200 and "Settings" in r.text, f"HTTP {r.status_code}")
+    record("Dashboard Device Token Mode UI", "Device Token Mode" in r.text and "id_device_mode_required" in r.text, "Cards & Toggle Switch Rendered")
 
     # 4.7 Support Messages View
     r = admin_session.get(f"{BASE_URL}/customadmin/support/")
     record("CustomAdmin Support View", r.status_code == 200, f"HTTP {r.status_code}")
 
     print("\n" + "=" * 70)
-    print("5. TESTING GOOGLE OAUTH & PLAY INTEGRITY ENDPOINTS")
+    print("5. TESTING GOOGLE OAUTH & PLAY INTEGRITY (PASSIVE & REQUIRED MODES)")
     print("=" * 70)
 
     # 5.1 Google Auth ID token validation endpoint
-    # Send request with invalid test token to verify handler connects and rejects with proper 400
     r = session.post(f"{BASE_URL}/api/users/auth/google/", json={"id_token": "dummy_test_token"})
     record("Google Auth ID-Token Endpoint", r.status_code == 400 and "Invalid" in r.text, f"HTTP {r.status_code} - Proper validation response: {r.text[:60]}")
 
@@ -260,14 +260,51 @@ def test_endpoints():
     r = session.get(f"{BASE_URL}/accounts/google/login/", allow_redirects=False)
     record("Google OAuth Redirect / Flow", r.status_code in [200, 302], f"HTTP {r.status_code}")
 
-    # 5.3 Google Play Integrity Endpoint
-    # Test with empty token -> should return 400
-    r = session.post(f"{BASE_URL}/api/verify-device/", json={})
-    record("Play Integrity Empty Token (400 validation)", r.status_code == 400, f"HTTP {r.status_code} - {r.text[:60]}")
+    # 5.3 Play Integrity PASSIVE mode (default)
+    from django.core.cache import cache
+    from games.models import AppSettings
+    app_set = AppSettings.objects.get(pk=1)
+    app_set.device_mode_required = False
+    app_set.save()
+    cache.delete("agames:device_mode_required")
 
-    # Test with dummy integrity token -> should invoke Google Service Account and return 403 decoding error
+    r = session.post(f"{BASE_URL}/api/verify-device/", json={})
+    record("Play Integrity PASSIVE Mode (/api/verify-device/)", r.status_code == 200 and "passive" in r.text.lower(), f"HTTP {r.status_code} - {r.json()}")
+
+    # 5.4 Play Integrity REQUIRED mode enforcement
+    app_set.device_mode_required = True
+    app_set.save()
+    cache.delete("agames:device_mode_required")
+
+    # In required mode, missing token should return 403
+    r = session.get(f"{BASE_URL}/api/games/")
+    record("Play Integrity REQUIRED Mode (Middleware blocks missing token)", r.status_code == 403, f"HTTP {r.status_code} - {r.json()}")
+
+    # In required mode, valid JWT token should pass through
+    from datetime import datetime, timedelta, timezone
+    import jwt
+    from django.conf import settings as dj_settings
+    now = datetime.now(tz=timezone.utc)
+    token_payload = {
+        "sub": dj_settings.ANDROID_PACKAGE_NAME,
+        "iat": now,
+        "exp": now + timedelta(days=3),
+        "app_verdict": "PLAY_RECOGNIZED",
+        "device_verdicts": ["MEETS_DEVICE_INTEGRITY"],
+    }
+    valid_jwt = jwt.encode(token_payload, dj_settings.DEVICE_JWT_SECRET, algorithm="HS256")
+    r = session.get(f"{BASE_URL}/api/games/", headers={"X-Device-Token": valid_jwt})
+    record("Play Integrity REQUIRED Mode (Valid Token Accepted)", r.status_code == 200, f"HTTP {r.status_code}")
+
+    # In required mode, verify-device contacts Google API
     r = session.post(f"{BASE_URL}/api/verify-device/", json={"integrity_token": "test_device_token_sample"})
-    record("Play Integrity Service Account Validation", r.status_code == 403 and "integrity" in r.text.lower(), f"HTTP {r.status_code} - {r.text[:70]}")
+    record("Play Integrity REQUIRED Mode (Google API Service Account Call)", r.status_code == 403 and "integrity" in r.text.lower(), f"HTTP {r.status_code} - {r.text[:60]}")
+
+    # Reset to PASSIVE mode
+    app_set.device_mode_required = False
+    app_set.save()
+    cache.delete("agames:device_mode_required")
+    record("Reset Device Mode to PASSIVE", True, "Mode safely restored to passive")
 
     print("\n" + "=" * 70)
     print("VERIFICATION SUMMARY")

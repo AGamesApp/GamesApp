@@ -150,6 +150,7 @@
         cursor: pointer;
         transition: all 0.3s ease;
         width: 100%;
+        margin-top: 1rem;
     }
     
     .btn-save:hover {
@@ -230,6 +231,92 @@
         font-size: 0.85rem;
         padding: 0.25rem 0;
     }
+
+    /* ── Device Mode Toggle Switch ── */
+    .device-mode-toggle {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        user-select: none;
+        flex-shrink: 0;
+    }
+
+    .device-mode-toggle input[type="checkbox"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .device-mode-slider {
+        display: flex;
+        align-items: center;
+        width: 160px;
+        height: 44px;
+        border-radius: 22px;
+        padding: 4px;
+        position: relative;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.08);
+    }
+
+    .slider-passive {
+        background: linear-gradient(135deg, #065f46, #059669);
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 0 20px rgba(16,185,129,0.25), 0 0 0 1px rgba(16,185,129,0.3);
+    }
+
+    .slider-required {
+        background: linear-gradient(135deg, #7f1d1d, #dc2626);
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 0 20px rgba(239,68,68,0.25), 0 0 0 1px rgba(239,68,68,0.3);
+    }
+
+    .slider-thumb {
+        position: absolute;
+        width: 36px;
+        height: 36px;
+        border-radius: 18px;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 2;
+    }
+
+    .slider-passive .slider-thumb {
+        left: 4px;
+    }
+
+    .slider-required .slider-thumb {
+        left: calc(100% - 40px);
+    }
+
+    .slider-label-off,
+    .slider-label-on {
+        position: absolute;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.9);
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .slider-label-off  { right: 10px; }
+    .slider-label-on   { left: 10px; }
+
+    .slider-passive .slider-label-off  { opacity: 1; }
+    .slider-passive .slider-label-on   { opacity: 0; }
+    .slider-required .slider-label-off { opacity: 0; }
+    .slider-required .slider-label-on  { opacity: 1; }
+
+    /* Hover glow */
+    .device-mode-toggle:hover .slider-passive {
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 0 28px rgba(16,185,129,0.4), 0 0 0 1px rgba(16,185,129,0.5);
+    }
+    .device-mode-toggle:hover .slider-required {
+        box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), 0 0 28px rgba(239,68,68,0.4), 0 0 0 1px rgba(239,68,68,0.5);
+    }
 </style>
 {% endblock %}
 
@@ -264,6 +351,18 @@
                     <span class="maintenance-badge inactive">
                         <i class="fas fa-check-circle"></i>
                         Inactive
+                    </span>
+                {% endif %}
+            </div>
+            <div class="current-value-item">
+                <span class="current-value-label">Device Token Mode:</span>
+                {% if settings.device_mode_required %}
+                    <span class="maintenance-badge active">
+                        <i class="fas fa-lock"></i> REQUIRED (Strict)
+                    </span>
+                {% else %}
+                    <span class="maintenance-badge inactive">
+                        <i class="fas fa-shield-alt"></i> PASSIVE (Observation)
                     </span>
                 {% endif %}
             </div>
@@ -402,7 +501,122 @@
                 {% endif %}
                 <small class="form-help">{{ form.popup_link.help_text }}</small>
             </div>
-            
+
+            <!-- ===== DEVICE TOKEN MODE ===== -->
+            <div class="form-group" style="margin-top: 2rem;">
+                <div style="background: linear-gradient(135deg, rgba(15,15,30,0.95) 0%, rgba(25,20,50,0.95) 100%);
+                            border: 1px solid rgba(139,92,246,0.3);
+                            border-radius: 16px;
+                            padding: 1.75rem;
+                            position: relative;
+                            overflow: hidden;">
+
+                    <!-- Background glow -->
+                    <div style="position:absolute; top:-40px; right:-40px; width:140px; height:140px;
+                                background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%);
+                                pointer-events:none;"></div>
+
+                    <!-- Header -->
+                    <div style="display:flex; align-items:center; gap:0.85rem; margin-bottom:1.25rem;">
+                        <div style="width:42px; height:42px; border-radius:10px; flex-shrink:0;
+                                    background: linear-gradient(135deg, #7c3aed, #a855f7);
+                                    display:flex; align-items:center; justify-content:center;
+                                    box-shadow: 0 4px 15px rgba(124,58,237,0.4);">
+                            <i class="fas fa-shield-alt" style="color:white; font-size:1.1rem;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:1.05rem; font-weight:700; color:var(--text-primary); letter-spacing:0.3px;">
+                                Device Token Mode
+                            </div>
+                            <div style="font-size:0.82rem; color:var(--text-muted); margin-top:1px;">
+                                Controls how the API enforces Google Play Integrity device tokens
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mode Cards Row -->
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+
+                        <!-- PASSIVE card -->
+                        <div id="card-passive" style="border-radius:12px; padding:1.1rem 1.25rem;
+                                    border: 2px solid {% if not settings.device_mode_required %}rgba(16,185,129,0.6){% else %}rgba(255,255,255,0.08){% endif %};
+                                    background: {% if not settings.device_mode_required %}rgba(16,185,129,0.1){% else %}rgba(255,255,255,0.03){% endif %};
+                                    transition: all 0.3s ease; cursor:default;">
+                            <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.5rem;">
+                                <div style="width:8px; height:8px; border-radius:50%;
+                                            background:{% if not settings.device_mode_required %}#10b981{% else %}rgba(255,255,255,0.2){% endif %};
+                                            {% if not settings.device_mode_required %}box-shadow:0 0 8px #10b981;{% endif %}"></div>
+                                <span style="font-weight:700; font-size:0.9rem;
+                                             color:{% if not settings.device_mode_required %}#10b981{% else %}var(--text-muted){% endif %};">
+                                    PASSIVE
+                                </span>
+                            </div>
+                            <div style="font-size:0.78rem; color:var(--text-muted); line-height:1.5;">
+                                All requests allowed. Token is inspected but never blocks traffic.
+                                Verify endpoint returns <code style="background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:4px; font-size:0.76rem; color:#a5b4fc;">HTTP 200</code> always.
+                            </div>
+                        </div>
+
+                        <!-- REQUIRED card -->
+                        <div id="card-required" style="border-radius:12px; padding:1.1rem 1.25rem;
+                                    border: 2px solid {% if settings.device_mode_required %}rgba(239,68,68,0.6){% else %}rgba(255,255,255,0.08){% endif %};
+                                    background: {% if settings.device_mode_required %}rgba(239,68,68,0.08){% else %}rgba(255,255,255,0.03){% endif %};
+                                    transition: all 0.3s ease; cursor:default;">
+                            <div style="display:flex; align-items:center; gap:0.6rem; margin-bottom:0.5rem;">
+                                <div style="width:8px; height:8px; border-radius:50%;
+                                            background:{% if settings.device_mode_required %}#ef4444{% else %}rgba(255,255,255,0.2){% endif %};
+                                            {% if settings.device_mode_required %}box-shadow:0 0 8px #ef4444;{% endif %}"></div>
+                                <span style="font-weight:700; font-size:0.9rem;
+                                             color:{% if settings.device_mode_required %}#ef4444{% else %}var(--text-muted){% endif %};">
+                                    REQUIRED
+                                </span>
+                            </div>
+                            <div style="font-size:0.78rem; color:var(--text-muted); line-height:1.5;">
+                                Strict enforcement. Requests without a valid token receive
+                                <code style="background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:4px; font-size:0.76rem; color:#fca5a5;">HTTP 403</code>. Full Google verification active.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Toggle Row -->
+                    <div style="display:flex; align-items:center; justify-content:space-between;
+                                background: rgba(0,0,0,0.25); border-radius:12px; padding:1rem 1.25rem;">
+                        <div>
+                            <div style="font-size:0.9rem; font-weight:600; color:var(--text-primary);">
+                                Current Mode:
+                                {% if settings.device_mode_required %}
+                                    <span style="color:#ef4444; font-weight:700;">⛔ REQUIRED</span>
+                                {% else %}
+                                    <span style="color:#10b981; font-weight:700;">✅ PASSIVE</span>
+                                {% endif %}
+                            </div>
+                            <div style="font-size:0.78rem; color:var(--text-muted); margin-top:3px;">
+                                Toggle to switch mode, then save settings
+                            </div>
+                        </div>
+
+                        <!-- Premium Toggle Switch -->
+                        <label class="device-mode-toggle" for="id_device_mode_required" title="Toggle Device Token Mode">
+                            {{ form.device_mode_required }}
+                            <span class="device-mode-slider {% if settings.device_mode_required %}slider-required{% else %}slider-passive{% endif %}">
+                                <span class="slider-thumb"></span>
+                                <span class="slider-label-off">PASSIVE</span>
+                                <span class="slider-label-on">REQUIRED</span>
+                            </span>
+                        </label>
+                    </div>
+
+                    {% if form.device_mode_required.errors %}
+                        <ul class="errorlist" style="margin-top:0.5rem;">
+                            {% for error in form.device_mode_required.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- ===== END DEVICE TOKEN MODE ===== -->
+
             <button type="submit" class="btn-save">
                 <i class="fas fa-save"></i>
                 Save Settings
@@ -410,4 +624,22 @@
         </form>
     </div>
 </div>
+
+<script>
+(function() {
+    var checkbox = document.getElementById('id_device_mode_required');
+    var slider = document.querySelector('.device-mode-slider');
+    if (!checkbox || !slider) return;
+
+    checkbox.addEventListener('change', function() {
+        if (this.checked) {
+            slider.classList.remove('slider-passive');
+            slider.classList.add('slider-required');
+        } else {
+            slider.classList.remove('slider-required');
+            slider.classList.add('slider-passive');
+        }
+    });
+})();
+</script>
 {% endblock %}
