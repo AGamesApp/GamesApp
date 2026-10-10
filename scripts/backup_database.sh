@@ -5,11 +5,11 @@
 #
 
 # Configuration
-DB_NAME="agames_db"
+DB_NAME="gamesapp_db"
 DB_USER="agames_user"
 BACKUP_DIR="/root/backups/postgresql"
 DATE=$(date +"%Y%m%d_%H%M%S")
-BACKUP_FILE="${BACKUP_DIR}/agames_backup_${DATE}.sql"
+BACKUP_FILE="${BACKUP_DIR}/gamesapp_backup_${DATE}.sql"
 COMPRESSED_FILE="${BACKUP_FILE}.gz"
 LOG_FILE="${BACKUP_DIR}/backup.log"
 
@@ -41,10 +41,10 @@ if sudo -u postgres pg_dump "${DB_NAME}" > "${BACKUP_FILE}" 2>> "${LOG_FILE}"; t
         
         # Remove old backups (keep last N days)
         log_message "Removing backups older than ${RETENTION_DAYS} days"
-        find "${BACKUP_DIR}" -name "agames_backup_*.sql.gz" -type f -mtime +${RETENTION_DAYS} -delete
+        find "${BACKUP_DIR}" -name "gamesapp_backup_*.sql.gz" -type f -mtime +${RETENTION_DAYS} -delete
         
         # Count remaining backups
-        BACKUP_COUNT=$(find "${BACKUP_DIR}" -name "agames_backup_*.sql.gz" -type f | wc -l)
+        BACKUP_COUNT=$(find "${BACKUP_DIR}" -name "gamesapp_backup_*.sql.gz" -type f | wc -l)
         log_message "Total backups retained: ${BACKUP_COUNT}"
         
         log_message "Backup completed successfully: ${COMPRESSED_FILE}"
