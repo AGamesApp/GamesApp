@@ -16,7 +16,7 @@ import multiprocessing
 import os
 
 # Server Socket
-bind = "unix:/run/gunicorn.sock"
+bind = "127.0.0.1:8004"
 backlog = 1024  # Maximum number of pending connections (reduced for 4GB RAM)
 
 # Worker Processes
@@ -41,7 +41,7 @@ loglevel = "info"
 access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s" %(D)s'
 
 # Process Naming
-proc_name = "agames_gunicorn"
+proc_name = "gamesapp_gunicorn"
 
 # Server Mechanics
 daemon = False
