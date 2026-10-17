@@ -23,9 +23,9 @@ VALID_SUBSCRIPTION_STATES = {
 
 # Fallback expiry days if Google does not return an expiryTime
 PRODUCT_DURATIONS = {
-    'agames_sub_1month':  30,
-    'agames_sub_3months': 90,
-    'agames_sub_6months': 180,
+    'agamespro_sub_1month':  30,
+    'agamespro_sub_3months': 90,
+    'agamespro_sub_6months': 180,
 }
 
 

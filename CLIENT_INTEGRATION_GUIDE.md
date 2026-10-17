@@ -178,7 +178,7 @@ Content-Type: application/json
 ```json
 {
   "purchase_token": "oiibkfnlkjhdfakjhsdfkjahsdfjkhaskdjfh...",
-  "product_id": "agames_sub_1month"
+  "product_id": "agamespro_sub_1month"
 }
 ```
 
@@ -186,9 +186,9 @@ Content-Type: application/json
 
 | Product ID | Duration | Description |
 |------------|----------|-------------|
-| `agames_sub_1month` | 30 days | AGames Monthly Pass |
-| `agames_sub_3months` | 90 days | AGames Quarter Pass |
-| `agames_sub_6months` | 180 days | AGames Semi-Annual Pass |
+| `agamespro_sub_1month` | 30 days | AGames Pro 1 Month Pass |
+| `agamespro_sub_3months` | 90 days | AGames Pro 3 Months Pass |
+| `agamespro_sub_6months` | 180 days | AGames Pro 6 Months Pass |
 
 > The `product_id` must match exactly one of the above values.
 
@@ -198,7 +198,7 @@ Content-Type: application/json
   "message": "Purchase verified successfully!",
   "is_premium": true,
   "expiration_date": "2026-04-01T14:30:00Z",
-  "product_id": "agames_sub_1month"
+  "product_id": "agamespro_sub_1month"
 }
 ```
 
@@ -455,9 +455,9 @@ ON EVERY API RESPONSE:
 │    { "purchase_token": "...", "product_id": "..." }        │
 │                                                            │
 │  PRODUCT IDs:                                              │
-│    agames_sub_1month   (30 days)                           │
-│    agames_sub_3months  (90 days)                           │
-│    agames_sub_6months  (180 days)                          │
+│    agamespro_sub_1month   (30 days)                        │
+│    agamespro_sub_3months  (90 days)                        │
+│    agamespro_sub_6months  (180 days)                       │
 │                                                            │
 │  SESSION KICKED → 401 { "code": "session_invalidated" }   │
 │    → Clear credentials → Go to Login screen                │

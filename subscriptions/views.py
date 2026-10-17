@@ -62,6 +62,8 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
             end_date = start_date + timedelta(days=30)
         elif plan.duration == 'QUARTERLY':
             end_date = start_date + timedelta(days=90)
+        elif plan.duration == 'SEMI_ANNUAL':
+            end_date = start_date + timedelta(days=180)
         else:  # YEARLY
             end_date = start_date + timedelta(days=365)
         

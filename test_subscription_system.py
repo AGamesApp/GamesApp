@@ -178,7 +178,7 @@ def test_google_play_verify_mock(user, token, session_id):
     sep("TEST 6 – POST /api/payments/verify (mocked Google API)")
 
     FAKE_TOKEN   = "fake_google_purchase_token_abc123xyz"
-    PRODUCT_ID   = "agames_sub_1month"
+    PRODUCT_ID   = "agamespro_sub_1month"
     future_expiry = timezone.now() + timedelta(days=30)
     expiry_millis = int(future_expiry.timestamp() * 1000)
 
@@ -247,7 +247,7 @@ def test_token_reuse_fraud(user, token, session_id, used_token):
         )
         resp = client.post('/api/payments/verify/', {
             'purchase_token': used_token,   # ← same token as Test 6
-            'product_id': 'agames_sub_1month',
+            'product_id': 'agamespro_sub_1month',
         }, format='json')
 
     data = resp.json()
@@ -278,7 +278,7 @@ def test_same_user_retry(user, token, session_id, used_token):
         )
         resp = client.post('/api/payments/verify/', {
             'purchase_token': used_token,
-            'product_id': 'agames_sub_1month',
+            'product_id': 'agamespro_sub_1month',
         }, format='json')
 
     data = resp.json()

@@ -32,9 +32,9 @@ class GooglePlayVerifySerializer(serializers.Serializer):
     purchase_token = serializers.CharField(max_length=512)
     product_id = serializers.ChoiceField(
         choices=[
-            ('agames_sub_1month', 'AGames Monthly Pass'),
-            ('agames_sub_3months', 'AGames Quarter Pass'),
-            ('agames_sub_6months', 'AGames Semi-Annual Pass'),
+            ('agamespro_sub_1month', 'AGames Pro 1 Month Pass'),
+            ('agamespro_sub_3months', 'AGames Pro 3 Months Pass'),
+            ('agamespro_sub_6months', 'AGames Pro 6 Months Pass'),
         ]
     )
     # Optional: package name override (defaults to server config)

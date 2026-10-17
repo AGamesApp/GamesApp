@@ -12,10 +12,18 @@ class SubscriptionPlan(models.Model):
     DURATION_CHOICES = [
         ('MONTHLY', 'Monthly'),
         ('QUARTERLY', 'Quarterly'),
+        ('SEMI_ANNUAL', 'Semi-Annual'),
         ('YEARLY', 'Yearly'),
     ]
     
     name = models.CharField(max_length=100, unique=True)
+    product_id = models.CharField(
+        max_length=100,
+        blank=True,
+        default='',
+        db_index=True,
+        help_text='Google Play In-App Purchase Product ID (e.g., agamespro_sub_1month)'
+    )
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     duration = models.CharField(max_length=20, choices=DURATION_CHOICES, default='MONTHLY')

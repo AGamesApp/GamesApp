@@ -55,9 +55,9 @@ class GooglePlayPurchase(models.Model):
     """
 
     SUBSCRIPTION_PRODUCTS = {
-        'agames_sub_1month': {'label': 'AGames Monthly Pass', 'days': 30},
-        'agames_sub_3months': {'label': 'AGames Quarter Pass', 'days': 90},
-        'agames_sub_6months': {'label': 'AGames Semi-Annual Pass', 'days': 180},
+        'agamespro_sub_1month': {'label': 'AGames Pro 1 Month Pass', 'days': 30},
+        'agamespro_sub_3months': {'label': 'AGames Pro 3 Months Pass', 'days': 90},
+        'agamespro_sub_6months': {'label': 'AGames Pro 6 Months Pass', 'days': 180},
     }
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='google_purchases')

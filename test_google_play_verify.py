@@ -10,7 +10,7 @@ Usage:
   python test_google_play_verify.py <purchase_token> [product_id]
 
   Example:
-  python test_google_play_verify.py "AEuhp4A..." agames_sub_1month
+  python test_google_play_verify.py "AEuhp4A..." agamespro_sub_1month
 
 Results:
   ✅ CONNECTED  = API access works, fake token rejected as expected
@@ -27,7 +27,8 @@ import django
 from datetime import datetime, timezone
 
 # ── Django setup ────────────────────────────────────────────────────────────
-sys.path.insert(0, '/root/game/agames')
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, BASE_DIR)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gamezone.settings')
 django.setup()
 
@@ -36,9 +37,9 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 
 # ── Config ───────────────────────────────────────────────────────────────────
-KEY_FILE     = getattr(settings, 'FIREBASE_CREDENTIALS_PATH', '/root/game/agames/serviceAccountKey.json')
+KEY_FILE     = getattr(settings, 'FIREBASE_CREDENTIALS_PATH', os.path.join(BASE_DIR, 'serviceAccountKey.json'))
 PACKAGE_NAME = getattr(settings, 'GOOGLE_PLAY_PACKAGE_NAME', 'com.agames.play')
-PRODUCTS     = ['agames_sub_1month', 'agames_sub_3months', 'agames_sub_6months']
+PRODUCTS     = ['agamespro_sub_1month', 'agamespro_sub_3months', 'agamespro_sub_6months']
 
 # ── Build service ─────────────────────────────────────────────────────────────
 def get_service():

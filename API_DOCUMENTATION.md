@@ -475,7 +475,7 @@ Content-Type: application/json
 ```json
 {
   "purchase_token": "oiibkfnlkjhdfakjhsdfkj...",
-  "product_id": "agames_premium_monthly",
+  "product_id": "agamespro_sub_1month",
   "package_name": "com.agames.app"
 }
 ```
@@ -489,9 +489,9 @@ Content-Type: application/json
 **Available Product IDs:**
 | Product ID | Duration | Description |
 |------------|----------|-------------|
-| `agames_premium_monthly` | 1 month | Monthly subscription |
-| `agames_premium_quarterly` | 3 months | Quarterly subscription |
-| `agames_premium_yearly` | 12 months | Annual subscription |
+| `agamespro_sub_1month` | 1 month (30 days) | AGames Pro 1 Month Pass |
+| `agamespro_sub_3months` | 3 months (90 days) | AGames Pro 3 Months Pass |
+| `agamespro_sub_6months` | 6 months (180 days) | AGames Pro 6 Months Pass |
 
 ---
 
@@ -501,7 +501,7 @@ Content-Type: application/json
   "message": "Purchase verified successfully!",
   "is_premium": true,
   "expiration_date": "2026-01-28T14:30:00Z",
-  "product_id": "agames_premium_monthly"
+  "product_id": "agamespro_sub_1month"
 }
 ```
 
