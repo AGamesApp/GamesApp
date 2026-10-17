@@ -53,7 +53,8 @@ def test_endpoints():
 
     # 1.4 AssetLinks
     r = session.get(f"{BASE_URL}/.well-known/assetlinks.json")
-    record("AssetLinks (GET /.well-known/assetlinks.json)", r.status_code == 200, f"HTTP {r.status_code}")
+    assetlinks_ok = r.status_code == 200 and "50:11:B2:A8:71:A9:F4:B5" in r.text and "BE:2E:BE:09:E6:E5" in r.text
+    record("AssetLinks (GET /.well-known/assetlinks.json)", assetlinks_ok, f"HTTP {r.status_code}")
 
     # 1.5 Static Logo Asset
     r = session.get(f"{BASE_URL}/static/images/agames.jpg")
